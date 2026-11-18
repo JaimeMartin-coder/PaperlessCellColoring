@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en" data-font="standard" data-bg="white">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cell Adventures: Paperless Edition</title>
+<style>
+:root{
+  --fs:18px; --lh:1.6; --ls:0em; --ws:0em;
+  --bg:#F4F8FB; --card:#FFFFFF; --ink:#14213D; --muted:#44546E; --line:#C5D3E0;
+  --teal:#0E9F9A; --tealdark:#0A726F; --sun:#FFC233; --pink:#E84A7F; --blue:#2F6FED;
+  --good:#17703F; --goodbg:#E1F4E8; --bad:#A63A08; --badbg:#FCE9DC;
+  --hl:#FFE27A; --glow:#F59E0B;
+  --head:"Trebuchet MS","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --body:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+html[data-theme="quest"]{--bg:#F3EAD7;--card:#FFFBF0;--ink:#2B1B17;--muted:#5C463D;--line:#D8C9A8;--teal:#7A1F3D;--tealdark:#7A1F3D;--sun:#D9A441;--blue:#2F5DA8;--glow:#C2410C;
+  --head:"Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif}
+html[data-bg="cream"]{--bg:#FBF4E2;--card:#FFFDF6;--line:#DDD2B5}
+html[data-bg="blue"]{--bg:#E3EFFA;--card:#F7FBFF;--line:#B7CCE0}
+html[data-bg="gray"]{--bg:#E9EAEC;--card:#F8F8F9;--line:#C3C6CC}
+html[data-font="easy"]{--body:Verdana,"DejaVu Sans",Tahoma,Arial,sans-serif;--head:Verdana,"DejaVu Sans",Tahoma,Arial,sans-serif;--ls:.03em;--ws:.12em}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:var(--lh);letter-spacing:var(--ls);word-spacing:var(--ws);text-align:left}
+h1,h2,h3{font-family:var(--head);line-height:1.2;margin:0 0 .5rem}
+p{margin:.5rem 0}
+.app{max-width:1180px;margin:0 auto;padding:0 16px 48px}
+button{font:inherit;letter-spacing:inherit;word-spacing:inherit;color:inherit}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+main:focus,main:focus-visible{outline:none}
+
+/* header */
+.top{display:flex;align-items:center;gap:10px;padding:12px 0 10px;border-bottom:4px solid var(--ink);flex-wrap:wrap}
+.top .brand{font-family:var(--head);font-weight:800;font-size:1.25rem;margin-right:auto;display:flex;align-items:center;gap:8px}
+.brand svg{width:48px;height:auto}
+.chip{border:2px solid var(--ink);border-radius:999px;padding:4px 14px;background:var(--card);font-weight:700;font-size:.85rem;white-space:nowrap}
+.btn{font-weight:700;padding:11px 20px;min-height:46px;border-radius:12px;border:2px solid var(--ink);background:var(--card);cursor:pointer}
+.btn:hover:not(:disabled){background:var(--sun)}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover:not(:disabled){background:#243a66}
+.btn.small{padding:6px 14px;min-height:38px;font-size:.85rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.spacer{flex:1}
+
+/* welcome */
+.hero{padding:34px 0 10px}
+.hero h1{font-size:clamp(2.6rem,7vw,4.4rem);font-weight:900;margin:0}
+.hero .tag{font-size:1.15rem;max-width:36rem;margin:.5rem 0 1rem}
+.line{display:flex;align-items:center;margin:18px 0 22px;max-width:640px}
+.line b{width:22px;height:22px;border-radius:50%;border:4px solid var(--ink);background:var(--card);flex:none}
+.line b:first-child{background:var(--teal)} .line b:last-child{background:var(--sun)}
+.line span{height:6px;background:var(--ink);flex:1}
+.setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;align-items:start}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:20px 24px}
+.card h2{font-size:1.25rem}
+.card ul{margin:.3rem 0 .3rem 1.2rem;padding:0}
+.card li{margin:.25rem 0}
+label.fld{display:block;font-weight:700;margin:10px 0 2px}
+input[type=text]{font:inherit;padding:10px 12px;border:2px solid var(--ink);border-radius:10px;width:100%;background:#fff;color:var(--ink)}
+.note{color:var(--muted);font-size:.85rem}
+
+/* route map */
+.route{list-style:none;margin:18px 0 0;padding:0}
+.stop{display:grid;grid-template-columns:48px 1fr;gap:0 14px;position:relative;padding-bottom:18px}
+.stop:before{content:"";position:absolute;left:20px;top:30px;bottom:-4px;width:6px;background:var(--line)}
+.stop:last-child:before{display:none}
+.stop.done:before{background:var(--teal)}
+.dot{width:46px;height:46px;border-radius:50%;border:4px solid var(--ink);display:grid;place-items:center;font-family:var(--head);font-weight:800;background:var(--card);z-index:1}
+.stop.done .dot{background:var(--teal);color:#fff}
+.stop.next .dot{background:var(--sun)}
+.stop.locked .dot{background:var(--line);color:var(--muted);border-color:var(--muted)}
+.stop .card{padding:14px 20px}
+.stop.locked .card{border-color:var(--muted);color:var(--muted)}
+.stop h3{font-size:1.1rem;margin-bottom:.15rem}
+.meta{font-size:.82rem;color:var(--muted)}
+.stars{font-size:1.1rem;letter-spacing:.1em}
+
+/* tour layout */
+.tour{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,1fr);gap:22px;align-items:start;margin-top:16px}
+@media (max-width:880px){.tour{grid-template-columns:1fr}}
+.diagram{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:10px 10px 6px}
+.diagram .cap{font-weight:700;font-size:.9rem;margin:0 0 4px 6px}
+.diagram svg{width:100%;height:auto;display:block}
+.progress{height:10px;border-radius:999px;background:var(--line);overflow:hidden;margin:14px 0 4px}
+.progress div{height:100%;background:var(--teal)}
+.stepno{font-weight:700;color:var(--tealdark);margin:0}
+.found{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:1px 12px;font-size:.82rem;font-weight:700;background:var(--sun);margin:.2rem 0}
+.city{background:var(--bg);border-left:6px solid var(--teal);padding:8px 12px;border-radius:0 10px 10px 0}
+details.words{margin:10px 0}
+details.words summary{cursor:pointer;font-weight:700}
+details.words dl{margin:.4rem 0 0}
+details.words dt{font-weight:700;margin-top:.3rem}
+details.words dd{margin:0 0 0 1rem}
+fieldset.todo{border:2px dashed var(--ink);border-radius:12px;margin:14px 0 4px;padding:8px 14px 10px}
+fieldset.todo legend{font-weight:800;padding:0 6px}
+fieldset.todo label{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}
+fieldset.todo input{width:24px;height:24px;flex:none;margin-top:2px;accent-color:var(--teal)}
+.swatch{display:inline-block;width:16px;height:16px;border-radius:4px;border:2px solid var(--ink);vertical-align:-2px;margin:0 4px}
+
+/* quiz */
+.quiz{max-width:800px;margin:18px auto 0}
+.quiz.wide{max-width:none}
+.qprompt{font-size:1.25rem;font-weight:700;margin:.4rem 0 .6rem;font-family:var(--head)}
+.scene{background:var(--bg);border:2px solid var(--ink);border-radius:12px;padding:10px 16px;margin:8px 0 12px}
+.choice{display:flex;gap:12px;align-items:center;width:100%;text-align:left;margin:8px 0;padding:12px 16px;border:2px solid var(--ink);border-radius:12px;background:var(--card);cursor:pointer;min-height:54px}
+.choice:hover:not(:disabled):not(.correct):not(.wrong){background:#FFF3CC}
+.choice .letter{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-weight:800;flex:none;background:#fff}
+.choice .txt{flex:1}
+.choice .tag{font-weight:800;font-size:.85rem}
+.choice.correct{background:var(--goodbg);border-color:var(--good);border-width:3px}
+.choice.wrong{background:var(--badbg);border-color:var(--bad);border-style:dashed}
+.choice:disabled{cursor:default}
+.fb{border-radius:12px;padding:10px 16px;margin:12px 0;border:2px solid var(--ink);background:var(--card)}
+.fb.good{background:var(--goodbg);border-color:var(--good)}
+.fb.bad{background:var(--badbg);border-color:var(--bad)}
+.sort3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:640px){.sort3{grid-template-columns:1fr}}
+.sort3 .choice{justify-content:center;text-align:center;font-weight:700;margin:4px 0}
+.bigword{font-size:1.6rem;font-family:var(--head);font-weight:800;text-align:center;padding:18px 8px;border:3px solid var(--ink);border-radius:16px;background:var(--card);margin:10px 0 14px}
+.mini{max-width:460px;margin:10px auto 0}
+
+/* diagram highlighting */
+.cellsvg .org{transition:opacity .2s}
+.cellsvg.focus .org:not(.hl){opacity:.32}
+.cellsvg.focus .badge:not(.hl){opacity:.5}
+.cellsvg .org.hl [fill="#fff"]{fill:var(--hl)}
+.cellsvg .org.hl{filter:drop-shadow(0 0 5px var(--glow));animation:glow 1.6s ease-in-out infinite}
+.cellsvg .org.hl[data-org="membrane"] [fill="#fff"]{fill:#fff}
+.cellsvg .org.hl[data-org="membrane"] *{stroke:#D9480F;stroke-width:7px}
+.cellsvg .org.hl[data-org="cytoplasm"] [fill-opacity]{fill:var(--hl);fill-opacity:.6}
+.cellsvg.nobadge .badge{display:none}
+.cellsvg .badge.hl text{fill:#000}
+.cellsvg .badge.hl circle:nth-of-type(2){fill:var(--hl);stroke-width:4px}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 2px var(--glow))}50%{filter:drop-shadow(0 0 9px var(--glow))}}
+@media (prefers-reduced-motion:reduce){.cellsvg .org.hl{animation:none}}
+
+
+/* story */
+.bubble{display:flex;gap:12px;align-items:flex-start;background:#FFF8DC;border:2px solid var(--ink);border-radius:18px 18px 18px 4px;padding:10px 14px;margin:12px 0}
+.bubble .av{width:44px;height:44px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--head);font-weight:900;flex:none}
+.bubble p{margin:2px 0;flex:1}
+.trail{position:relative;height:44px;margin:12px 0 10px;border-bottom:8px solid var(--line)}
+.trail .fill{position:absolute;left:0;bottom:-8px;height:8px;background:var(--teal)}
+.trail .bus{position:absolute;bottom:-3px;width:64px;transform-origin:bottom center;transition:left .5s ease,transform .5s ease}
+.trail .bus svg{width:100%;height:auto;display:block}
+.herobus{width:170px;transition:transform 1.1s ease-in,opacity 1.1s;transform-origin:left bottom;margin-bottom:6px}
+.herobus svg{width:100%;height:auto;display:block}
+.herobus.shrunk{transform:scale(.06);opacity:.2}
+@media (prefers-reduced-motion:reduce){.herobus,.trail .bus{transition:none}}
+
+
+/* picker + quest extras */
+.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;margin-top:20px}
+.pick{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.pick .pickart{height:96px;display:flex;align-items:center;margin-bottom:6px}
+.pick .pickart svg{height:90px;width:auto;display:block}
+.pick .kind{font-weight:700;color:var(--muted);margin:0 0 6px}
+.pick button{margin-top:auto}
+.bossbar{margin:12px 0 10px;font-weight:700}
+.bossbar .hp{height:22px;border:3px solid var(--ink);border-radius:999px;background:var(--card);overflow:hidden;margin-top:4px}
+.bossbar .hp div{height:100%;background:#B3261E;transition:width .5s ease}
+.herobus.spin{animation:dspin 1.3s ease-in-out;transform-origin:50% 50%}
+html[data-theme="quest"] .herobus{width:120px}
+@keyframes dspin{0%{transform:rotate(0)}100%{transform:rotate(900deg)}}
+@media (prefers-reduced-motion:reduce){.herobus.spin{animation:none}.bossbar .hp div{transition:none}}
+html[data-theme="quest"] .trail .bus{width:44px}
+
+.spray{position:fixed;pointer-events:none;z-index:70;line-height:1}
+.codecard{margin-top:16px;border-width:3px;border-style:dashed}
+.codeword{font-family:var(--head);font-size:2.4rem;font-weight:900;letter-spacing:.12em;margin:.1rem 0 .4rem}
+
+/* paperless extras */
+@media (min-width:881px){.tour>div:first-child{position:sticky;top:10px;align-self:start}}
+.cellsvg.focus .org:not(.hl){opacity:.6}
+.todo2{margin-top:10px}
+.todo2 h3{font-size:1.02rem;margin:16px 0 4px}
+.todo2 .choice{padding:10px 14px;min-height:48px;margin:6px 0}
+.nm{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nm input{flex:1;min-width:170px;width:auto}
+.ok{font-weight:800;color:var(--good)}
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+.pc{width:42px;height:42px;border-radius:10px;border:3px solid var(--ink);cursor:pointer;display:grid;place-items:center;padding:0}
+.pc span{opacity:0;font-weight:900;color:#fff;text-shadow:0 0 3px #000;font-size:1.2rem}
+.pc[aria-pressed="true"]{outline:4px solid var(--blue);outline-offset:2px}
+.pc[aria-pressed="true"] span{opacity:1}
+.diagram[data-clickpaint] svg .org.hl{cursor:pointer}
+.sentence{font-size:1.1rem;margin:14px 0;line-height:2.1}
+.sentence select{font:inherit;padding:6px 8px;border:2px solid var(--ink);border-radius:8px;background:#fff;color:var(--ink);max-width:100%}
+textarea{font:inherit;width:100%;min-height:90px;padding:10px 12px;border:2px solid var(--ink);border-radius:10px;background:#fff;color:var(--ink)}
+.report .diagram{margin:10px 0}
+table.keyt{width:100%;border-collapse:collapse;margin:8px 0 16px}
+.keyt th,.keyt td{border-bottom:2px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.sw{display:inline-block;width:24px;height:24px;border:2px solid var(--ink);border-radius:6px;vertical-align:middle}
+@media print{
+  body{background:#fff}
+  body *{visibility:hidden}
+  #report,#report *{visibility:visible}
+  #report{position:absolute;left:0;top:0;width:100%;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .diagram,table.keyt{break-inside:avoid}
+  .noprint{display:none !important}
+}
+
+
+/* stripes (not a color) mark the part to work on */
+.cellsvg .org.hl [fill="#fff"]{fill:url(#hatch)}
+.cellsvg .org.hl[data-org="cytoplasm"] [fill-opacity]{fill:url(#hatch);fill-opacity:.55}
+.cellsvg .org.hl[data-org="membrane"] *{stroke:#14213D;stroke-width:8px;stroke-dasharray:12 7}
+.cellsvg .org.hl{filter:drop-shadow(0 0 4px #14213D);animation:none}
+.cellsvg .badge.hl circle:nth-of-type(2){fill:#fff;stroke-width:5px}
+.pc.sug{outline:3px dashed var(--ink);outline-offset:3px}
+.pc.sug[aria-pressed="true"]{outline:4px solid var(--blue)}
+
+
+/* wide invisible touch area along the cell membrane line */
+.org[data-org="membrane"] .hit{fill:none !important;stroke:transparent !important;stroke-width:36px !important;stroke-dasharray:none !important;pointer-events:stroke;cursor:pointer}
+
+.prevcolor{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 8px}
+
+.panel.wide{max-width:880px}
+.panel.wide .diagram{margin:6px 0}
+tr.unseen td{color:var(--muted)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
+.cmp ul{list-style:none;margin:6px 0;padding:0}
+.cmp li{margin:6px 0}
+.cmp h3{font-size:1rem;margin:0 0 4px}
+/* dialog */
+.scrim{position:fixed;inset:0;background:rgba(20,33,61,.55);display:grid;place-items:center;padding:16px;z-index:50}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:18px;max-width:520px;width:100%;padding:20px 24px;max-height:92vh;overflow:auto}
+.panel h2{margin-bottom:.2rem}
+.opt{margin:14px 0}
+.opt b{display:block;margin-bottom:4px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{padding:8px 14px;border:2px solid var(--ink);border-radius:10px;background:var(--card);cursor:pointer;font-weight:700;min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;z-index:60}
+
+/* summary */
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+.rank{font-family:var(--head);font-size:2rem;font-weight:900;margin:.2rem 0}
+table.stats{border-collapse:collapse;width:100%}
+table.stats th,table.stats td{border-bottom:2px solid var(--line);padding:8px 6px;text-align:left}
+.checks li{margin:.4rem 0}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+"use strict";
+const ORG = {"membrane": {"num": 1, "name": "Cell membrane", "job": "controls what goes in and out", "explain": "A thin, flexible layer around the cell. It lets helpful things in (like food and water) and keeps harmful things out.", "city": "The city gate. A guard checks everything that comes in or goes out.", "words": [["flexible", "can bend without breaking"]], "color": "orange", "found": "both"}, "cytoplasm": {"num": 2, "name": "Cytoplasm", "job": "jelly-like fluid that holds the organelles", "explain": "A thick, jelly-like liquid that fills the cell. All the organelles float in it, and many chemical reactions happen here.", "city": "The ground and air of the city. Every building sits in it.", "words": [["organelle", "a tiny part inside a cell that has a job"]], "color": "light yellow", "found": "both"}, "nucleus": {"num": 3, "name": "Nucleus", "job": "holds DNA and controls the cell", "explain": "The control center. It stores the cell's DNA, the instructions for everything the cell does.", "city": "City Hall. The plans and the rules are kept here.", "words": [["DNA", "the instruction code for building and running a cell"]], "color": "purple", "found": "both"}, "nucleolus": {"num": 4, "name": "Nucleolus", "job": "builds ribosomes", "explain": "A dark spot inside the nucleus. It builds ribosomes, the tiny machines that make proteins.", "city": "The tool factory inside City Hall. It makes the tools the workers need.", "words": [["ribosome", "a tiny machine that builds proteins"]], "color": "dark blue", "found": "both"}, "rer": {"num": 5, "name": "Rough ER", "job": "makes and moves proteins", "explain": "Folded sheets covered in ribosomes, so they look bumpy. Proteins are built here and sent on their way.", "city": "The assembly line. Workers (ribosomes) build products and send them down the line.", "words": [["protein", "a molecule that does most of the work in a cell"], ["ER", "short for endoplasmic reticulum"]], "color": "teal", "found": "both"}, "ser": {"num": 6, "name": "Smooth ER", "job": "makes lipids (fats) and cleans up toxins", "explain": "Folded tubes with no ribosomes, so they look smooth. They make lipids (fats) and break down harmful chemicals.", "city": "The chemical plant and cleanup crew.", "words": [["lipid", "a fat or oil molecule"], ["toxin", "a harmful substance"]], "color": "light green", "found": "both"}, "ribo": {"num": 7, "name": "Ribosomes", "job": "build proteins", "explain": "Tiny machines that build proteins. Some float in the cytoplasm and some sit on the rough ER.", "city": "The builders. Thousands of tiny workers, each one making a product.", "words": [["build", "put together piece by piece"]], "color": "pink", "found": "both"}, "golgi": {"num": 8, "name": "Golgi apparatus", "job": "sorts, packages, and ships proteins", "explain": "A stack of flat sacs. It receives proteins, packages them in bubbles, and ships them to where they are needed.", "city": "The post office. It sorts, wraps, and mails packages.", "words": [["package", "wrap something up so it can be sent"]], "color": "red", "found": "both"}, "mito": {"num": 9, "name": "Mitochondria", "job": "releases energy (ATP) from food", "explain": "The power plants. They break down food to make ATP, the energy the cell uses. Plant cells AND animal cells have them.", "city": "The power plant. It turns fuel into electricity for the whole city.", "words": [["ATP", "the energy molecule cells use"], ["mitochondria", "more than one mitochondrion"]], "color": "brown", "found": "both"}, "vacuole": {"num": 10, "name": "Vacuole", "job": "stores water, food, and waste", "explain": "A storage sac. Plant cells have one very large central vacuole full of water that keeps the cell firm. Animal cells have small ones.", "city": "The water tower and storage warehouse.", "words": [["store", "keep something for later"], ["firm", "stiff, not floppy"]], "color": "blue", "found": "both"}, "wall": {"num": 11, "name": "Cell wall", "job": "gives support and protection", "explain": "A stiff outer layer around a plant cell, outside the cell membrane. It holds the cell in shape and protects it.", "city": "The city wall. Strong and stiff.", "words": [["support", "hold up and keep in shape"]], "color": "tan", "found": "plant"}, "chloro": {"num": 12, "name": "Chloroplast", "job": "captures sunlight to make sugar", "explain": "Green parts that capture sunlight and use it to make sugar. This is photosynthesis. Only plant cells (and some other organisms) have them.", "city": "The solar farm. It turns sunlight into food.", "words": [["photosynthesis", "using sunlight to make sugar"]], "color": "green", "found": "plant"}, "lyso": {"num": 11, "name": "Lysosome", "job": "breaks down waste and old parts", "explain": "A small bubble full of enzymes. It breaks down waste, old cell parts, and germs the cell swallows.", "city": "The recycling center and cleanup crew.", "words": [["enzyme", "a protein that speeds up a chemical reaction"]], "color": "dark red", "found": "animal"}, "centri": {"num": 12, "name": "Centrioles", "job": "help the cell divide", "explain": "A pair of small tubes shaped like cylinders. They help organize the fibers that pull the cell's DNA apart when the cell divides.", "city": "The moving crew that helps a building split into two.", "words": [["divide", "split into two"]], "color": "gray", "found": "animal"}};
+const PLANT_ORDER = ["membrane", "cytoplasm", "nucleus", "nucleolus", "rer", "ser", "ribo", "golgi", "mito", "vacuole", "wall", "chloro"];
+const ANIMAL_ORDER = ["membrane", "cytoplasm", "nucleus", "nucleolus", "rer", "ser", "ribo", "golgi", "mito", "vacuole", "lyso", "centri"];
+const SVG = { plant: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -16 660 456" role="img" aria-label="Plant cell diagram"><g class="org" data-org="wall"><path fill-rule="evenodd" fill="#fff" stroke="#000" stroke-width="2.6" d="M60,20 H580 Q620,20 620,60 V380 Q620,420 580,420 H60 Q20,420 20,380 V60 Q20,20 60,20 Z M64,38 H576 Q602,38 602,64 V376 Q602,402 576,402 H64 Q38,402 38,376 V64 Q38,38 64,38 Z"/></g><g class="org" data-org="membrane"><rect x="38" y="38" width="564" height="364" rx="26" ry="26" fill="none" stroke="#000" stroke-width="2.4"/></g><g class="org" data-org="cytoplasm"><rect x="39" y="39" width="562" height="362" rx="25" fill="#fff" fill-opacity="0.01" stroke="none"/></g><g class="org" data-org="vacuole"><ellipse cx="185" cy="222" rx="125" ry="150" fill="#fff" stroke="#000" stroke-width="2.6"/><path d="M120,150 q6.5,-6 13.0,0 t13.0,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/><path d="M120,164 q6.5,-6 13.0,0 t13.0,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/><path d="M120,178 q6.5,-6 13.0,0 t13.0,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/><path d="M190,255 q6.5,-6 13.0,0 t13.0,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/><path d="M190,269 q6.5,-6 13.0,0 t13.0,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/><path d="M190,283 q6.5,-6 13.0,0 t13.0,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/></g><g class="org" data-org="nucleus"><circle cx="445" cy="118" r="60" fill="#fff" stroke="#000" stroke-width="2.6"/><circle cx="445" cy="118" r="54" fill="none" stroke="#000" stroke-width="1.2" stroke-dasharray="7 4"/><path d="M407,104 q10,-12 20,0 t20,0" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"/><path d="M411,144 q9,-10 18,0 t18,0" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></g><g class="org" data-org="nucleolus"><circle cx="458" cy="128" r="15" fill="#fff" stroke="#000" stroke-width="2.2"/></g><g class="org" data-org="rer"><rect x="352" y="190" width="150" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="368" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="394" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="420" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="446" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="472" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><rect x="360" y="210" width="164" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="376" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="402" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="428" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="454" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="480" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="506" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><rect x="352" y="230" width="150" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="368" cy="225.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="394" cy="225.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="420" cy="225.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="446" cy="225.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="472" cy="225.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><rect x="360" y="250" width="164" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="376" cy="245.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="402" cy="245.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="428" cy="245.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="454" cy="245.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="480" cy="245.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="506" cy="245.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/></g><g class="org" data-org="ser"><rect x="372" y="266" width="140" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><rect x="380" y="286" width="150" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><rect x="372" y="306" width="140" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /></g><g class="org" data-org="golgi"><path d="M353.0,340 Q396.0,316 439.0,340 Q396.0,336 353.0,340 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M348.0,353 Q396.0,329 444.0,353 Q396.0,349 348.0,353 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M346.0,366 Q396.0,342 446.0,366 Q396.0,362 346.0,366 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M348.0,379 Q396.0,355 444.0,379 Q396.0,375 348.0,379 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M353.0,392 Q396.0,368 439.0,392 Q396.0,388 353.0,392 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/></g><g class="org" data-org="mito"><g transform="translate(548,352) rotate(-14)"><ellipse cx="0" cy="0" rx="42" ry="21" fill="#fff" stroke="#000" stroke-width="2.4"/><path d="M-26,-15.492422502470642 L-26,5.772347875864725 Q-21,10.225301951531797 -18,5.772347875864725" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M-9,19.512191496766015 L-9,-7.179267023868104 Q-4,-12.717558727994929 -1,-7.179267023868104" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M8,-19.615528128088304 L8,7.215434844830906 Q13,12.781627439414748 16,7.215434844830906" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M25,15.874537030686206 L25,-5.906087960740171 Q30,-10.462212959025447 33,-5.906087960740171" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(292,370) rotate(8)"><ellipse cx="0" cy="0" rx="36" ry="18" fill="#fff" stroke="#000" stroke-width="2.4"/><path d="M-26,-11.449899597988733 L-26,4.357464859296056 Q-21,7.718937750753014 -18,4.357464859296056" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M-9,16.428425057933378 L-9,-6.099948770276682 Q-4,-10.805623535918695 -1,-6.099948770276682" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M8,-16.549928774784245 L8,6.142475071174485 Q13,10.880955840366232 16,6.142475071174485" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M25,11.95183384698862 L25,-4.533141846446017 Q30,-8.030136985132945 33,-4.533141846446017" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/></g></g><g class="org" data-org="chloro"><g transform="translate(562,100) rotate(-12)"><ellipse cx="0" cy="0" rx="42" ry="23" fill="#fff" stroke="#000" stroke-width="2.4"/><rect x="-22" y="-12" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-22" y="-4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-22" y="4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-2" y="-12" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-2" y="-4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-2" y="4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="18" y="-12" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="18" y="-4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="18" y="4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M-6,-9 L-4,-9 M-6,-1 L-4,-1 M14,-9 L16,-9" stroke="#000" stroke-width="1.2"/></g><g transform="translate(342,66) rotate(6)"><ellipse cx="0" cy="0" rx="38" ry="21" fill="#fff" stroke="#000" stroke-width="2.4"/><rect x="-22" y="-12" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-22" y="-4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-22" y="4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-2" y="-12" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-2" y="-4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="-2" y="4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="18" y="-12" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="18" y="-4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><rect x="18" y="4" width="16" height="6" rx="3" fill="#fff" stroke="#000" stroke-width="1.5"/><path d="M-6,-9 L-4,-9 M-6,-1 L-4,-1 M14,-9 L16,-9" stroke="#000" stroke-width="1.2"/></g></g><g class="org" data-org="ribo"><circle cx="326" cy="150" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="330" cy="252" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="332" cy="300" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="568" cy="214" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="590" cy="238" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="588" cy="392" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="480" cy="392" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="470" cy="330" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="330" cy="112" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="590" cy="140" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/></g><g class="badge" data-badge="wall"><line x1="330" y1="-2" x2="330" y2="29" stroke="#000" stroke-width="1.6"/><circle cx="330" cy="29" r="2.4" fill="#000"/><circle cx="330" cy="-2" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="330" y="2.5999999999999996" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">11</text></g><g class="badge" data-badge="membrane"><line x1="637" y1="215" x2="602" y2="215" stroke="#000" stroke-width="1.6"/><circle cx="602" cy="215" r="2.4" fill="#000"/><circle cx="637" cy="215" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="637" y="219.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">1</text></g><g class="badge" data-badge="cytoplasm"><line x1="566" y1="176" x2="548" y2="194" stroke="#000" stroke-width="1.6"/><circle cx="548" cy="194" r="2.4" fill="#000"/><circle cx="566" cy="176" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="566" y="180.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">2</text></g><g class="badge" data-badge="nucleus"><line x1="520" y1="60" x2="497" y2="82" stroke="#000" stroke-width="1.6"/><circle cx="497" cy="82" r="2.4" fill="#000"/><circle cx="520" cy="60" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="520" y="64.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">3</text></g><g class="badge" data-badge="nucleolus"><line x1="398" y1="90" x2="450" y2="122" stroke="#000" stroke-width="1.6"/><circle cx="450" cy="122" r="2.4" fill="#000"/><circle cx="398" cy="90" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="398" y="94.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">4</text></g><g class="badge" data-badge="rer"><line x1="330" y1="222" x2="354" y2="212" stroke="#000" stroke-width="1.6"/><circle cx="354" cy="212" r="2.4" fill="#000"/><circle cx="330" cy="222" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="330" y="226.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">5</text></g><g class="badge" data-badge="ser"><line x1="560" y1="296" x2="514" y2="292" stroke="#000" stroke-width="1.6"/><circle cx="514" cy="292" r="2.4" fill="#000"/><circle cx="560" cy="296" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="560" y="300.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">6</text></g><g class="badge" data-badge="ribo"><line x1="318" y1="184" x2="326" y2="152" stroke="#000" stroke-width="1.6"/><circle cx="326" cy="152" r="2.4" fill="#000"/><circle cx="318" cy="184" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="318" y="188.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">7</text></g><g class="badge" data-badge="golgi"><line x1="308" y1="340" x2="348" y2="352" stroke="#000" stroke-width="1.6"/><circle cx="348" cy="352" r="2.4" fill="#000"/><circle cx="308" cy="340" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="308" y="344.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">8</text></g><g class="badge" data-badge="mito"><line x1="500" y1="396" x2="530" y2="362" stroke="#000" stroke-width="1.6"/><circle cx="530" cy="362" r="2.4" fill="#000"/><circle cx="500" cy="396" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="500" y="400.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">9</text></g><g class="badge" data-badge="vacuole"><line x1="235" y1="120" x2="200" y2="140" stroke="#000" stroke-width="1.6"/><circle cx="200" cy="140" r="2.4" fill="#000"/><circle cx="235" cy="120" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="235" y="124.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">10</text></g><g class="badge" data-badge="chloro"><line x1="612" y1="62" x2="590" y2="92" stroke="#000" stroke-width="1.6"/><circle cx="590" cy="92" r="2.4" fill="#000"/><circle cx="612" cy="62" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="612" y="66.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">12</text></g></svg>`, animal: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -16 660 456" role="img" aria-label="Animal cell diagram"><g class="org" data-org="membrane"><ellipse cx="330" cy="225" rx="305" ry="195" fill="#fff" stroke="#000" stroke-width="3"/></g><g class="org" data-org="cytoplasm"><ellipse cx="330" cy="225" rx="300" ry="190" fill="#fff" fill-opacity="0.01" stroke="none"/></g><g class="org" data-org="nucleus"><circle cx="300" cy="205" r="68" fill="#fff" stroke="#000" stroke-width="2.6"/><circle cx="300" cy="205" r="62" fill="none" stroke="#000" stroke-width="1.2" stroke-dasharray="7 4"/><path d="M262,191 q10,-12 20,0 t20,0" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"/><path d="M266,231 q9,-10 18,0 t18,0" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></g><g class="org" data-org="nucleolus"><circle cx="314" cy="216" r="17" fill="#fff" stroke="#000" stroke-width="2.2"/></g><g class="org" data-org="rer"><rect x="400" y="150" width="130" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="416" cy="145.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="442" cy="145.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="468" cy="145.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="494" cy="145.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="520" cy="145.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><rect x="408" y="170" width="140" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="424" cy="165.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="450" cy="165.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="476" cy="165.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="502" cy="165.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="528" cy="165.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><rect x="400" y="190" width="130" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="416" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="442" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="468" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="494" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="520" cy="185.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><rect x="408" y="210" width="140" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><circle cx="424" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="450" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="476" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="502" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="528" cy="205.5" r="3.2" fill="#fff" stroke="#000" stroke-width="1.6"/></g><g class="org" data-org="ser"><rect x="412" y="232" width="124" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><rect x="420" y="252" width="134" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /><rect x="412" y="272" width="124" height="11" rx="5.5" ry="5.5" fill="#fff" stroke="#000" stroke-width="2" /></g><g class="org" data-org="golgi"><path d="M117.0,292 Q160.0,268 203.0,292 Q160.0,288 117.0,292 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M112.0,305 Q160.0,281 208.0,305 Q160.0,301 112.0,305 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M110.0,318 Q160.0,294 210.0,318 Q160.0,314 110.0,318 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M112.0,331 Q160.0,307 208.0,331 Q160.0,327 112.0,331 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M117.0,344 Q160.0,320 203.0,344 Q160.0,340 117.0,344 Z" fill="#fff" stroke="#000" stroke-width="2" stroke-linejoin="round"/></g><g class="org" data-org="mito"><g transform="translate(215,108) rotate(-20)"><ellipse cx="0" cy="0" rx="46" ry="23" fill="#fff" stroke="#000" stroke-width="2.4"/><path d="M-26,-17.973665961010276 L-26,6.640783086353596 Q-21,11.763672895826371 -18,6.640783086353596" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M-9,21.555487137279922 L-9,-7.894420498047972 Q-4,-13.984402025113551 -1,-7.894420498047972" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M8,-21.64950330581225 L8,7.927326157034287 Q13,14.042692049603595 16,7.927326157034287" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M25,18.306734576307825 L25,-6.757357101707738 Q30,-11.970175437310852 33,-6.757357101707738" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/></g><g transform="translate(500,335) rotate(12)"><ellipse cx="0" cy="0" rx="46" ry="23" fill="#fff" stroke="#000" stroke-width="2.4"/><path d="M-26,-17.973665961010276 L-26,6.640783086353596 Q-21,11.763672895826371 -18,6.640783086353596" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M-9,21.555487137279922 L-9,-7.894420498047972 Q-4,-13.984402025113551 -1,-7.894420498047972" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M8,-21.64950330581225 L8,7.927326157034287 Q13,14.042692049603595 16,7.927326157034287" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/><path d="M25,18.306734576307825 L25,-6.757357101707738 Q30,-11.970175437310852 33,-6.757357101707738" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round"/></g></g><g class="org" data-org="lyso"><circle cx="110" cy="205" r="19" fill="#fff" stroke="#000" stroke-width="2.2"/><circle cx="104" cy="200" r="2" fill="#000"/><circle cx="116" cy="203" r="2" fill="#000"/><circle cx="109" cy="212" r="2" fill="#000"/><circle cx="430" cy="350" r="19" fill="#fff" stroke="#000" stroke-width="2.2"/><circle cx="424" cy="345" r="2" fill="#000"/><circle cx="436" cy="348" r="2" fill="#000"/><circle cx="429" cy="357" r="2" fill="#000"/></g><g class="org" data-org="centri"><g transform="translate(318,308)"><rect x="-22" y="-7" width="44" height="14" rx="3" fill="#fff" stroke="#000" stroke-width="2"/><line x1="-12" y1="-7" x2="-12" y2="7" stroke="#000" stroke-width="1.3"/><line x1="0" y1="-7" x2="0" y2="7" stroke="#000" stroke-width="1.3"/><line x1="12" y1="-7" x2="12" y2="7" stroke="#000" stroke-width="1.3"/><rect x="-7" y="12" width="14" height="40" rx="3" fill="#fff" stroke="#000" stroke-width="2"/><line x1="-7" y1="21" x2="7" y2="21" stroke="#000" stroke-width="1.3"/><line x1="-7" y1="32" x2="7" y2="32" stroke="#000" stroke-width="1.3"/><line x1="-7" y1="43" x2="7" y2="43" stroke="#000" stroke-width="1.3"/></g></g><g class="org" data-org="vacuole"><circle cx="578" cy="285" r="21" fill="#fff" stroke="#000" stroke-width="2.2"/><path d="M568,285 q5,-6 10,0 t10,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/><circle cx="400" cy="70" r="21" fill="#fff" stroke="#000" stroke-width="2.2"/><path d="M390,70 q5,-6 10,0 t10,0" fill="none" stroke="#000" stroke-width="1.4" stroke-linecap="round"/></g><g class="org" data-org="ribo"><circle cx="220" cy="190" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="225" cy="250" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="340" cy="92" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="470" cy="115" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="560" cy="200" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="590" cy="250" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="165" cy="372" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="250" cy="345" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="392" cy="275" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/><circle cx="180" cy="150" r="5" fill="#fff" stroke="#000" stroke-width="1.6"/></g><g class="badge" data-badge="membrane"><line x1="645" y1="225" x2="635" y2="225" stroke="#000" stroke-width="1.6"/><circle cx="635" cy="225" r="2.4" fill="#000"/><circle cx="645" cy="225" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="645" y="229.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">1</text></g><g class="badge" data-badge="cytoplasm"><line x1="400" y1="396" x2="386" y2="380" stroke="#000" stroke-width="1.6"/><circle cx="386" cy="380" r="2.4" fill="#000"/><circle cx="400" cy="396" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="400" y="400.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">2</text></g><g class="badge" data-badge="nucleus"><line x1="378" y1="140" x2="350" y2="166" stroke="#000" stroke-width="1.6"/><circle cx="350" cy="166" r="2.4" fill="#000"/><circle cx="378" cy="140" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="378" y="144.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">3</text></g><g class="badge" data-badge="nucleolus"><line x1="350" y1="245" x2="316" y2="218" stroke="#000" stroke-width="1.6"/><circle cx="316" cy="218" r="2.4" fill="#000"/><circle cx="350" cy="245" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="350" y="249.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">4</text></g><g class="badge" data-badge="rer"><line x1="570" y1="135" x2="520" y2="158" stroke="#000" stroke-width="1.6"/><circle cx="520" cy="158" r="2.4" fill="#000"/><circle cx="570" cy="135" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="570" y="139.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">5</text></g><g class="badge" data-badge="ser"><line x1="590" y1="205" x2="540" y2="246" stroke="#000" stroke-width="1.6"/><circle cx="540" cy="246" r="2.4" fill="#000"/><circle cx="590" cy="205" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="590" y="209.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">6</text></g><g class="badge" data-badge="ribo"><line x1="232" y1="222" x2="221" y2="193" stroke="#000" stroke-width="1.6"/><circle cx="221" cy="193" r="2.4" fill="#000"/><circle cx="232" cy="222" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="232" y="226.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">7</text></g><g class="badge" data-badge="golgi"><line x1="75" y1="290" x2="112" y2="300" stroke="#000" stroke-width="1.6"/><circle cx="112" cy="300" r="2.4" fill="#000"/><circle cx="75" cy="290" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="75" y="294.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">8</text></g><g class="badge" data-badge="mito"><line x1="255" y1="70" x2="235" y2="96" stroke="#000" stroke-width="1.6"/><circle cx="235" cy="96" r="2.4" fill="#000"/><circle cx="255" cy="70" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="255" y="74.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">9</text></g><g class="badge" data-badge="vacuole"><line x1="455" y1="62" x2="421" y2="68" stroke="#000" stroke-width="1.6"/><circle cx="421" cy="68" r="2.4" fill="#000"/><circle cx="455" cy="62" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="455" y="66.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">10</text></g><g class="badge" data-badge="lyso"><line x1="62" y1="205" x2="92" y2="205" stroke="#000" stroke-width="1.6"/><circle cx="92" cy="205" r="2.4" fill="#000"/><circle cx="62" cy="205" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="62" y="209.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">11</text></g><g class="badge" data-badge="centri"><line x1="375" y1="345" x2="340" y2="328" stroke="#000" stroke-width="1.6"/><circle cx="340" cy="328" r="2.4" fill="#000"/><circle cx="375" cy="345" r="12" fill="#fff" stroke="#000" stroke-width="2"/><text x="375" y="349.6" text-anchor="middle" font-family="Liberation Sans, Arial, sans-serif" font-weight="700" font-size="14" fill="#000">12</text></g></svg>` };
+
+/* ---------- colors suggested on cards (names always shown, swatch is a bonus) ---------- */
+const SWATCH = {"light blue":"#8FD3F4",teal:"#1A9E9E",tan:"#C9A66B",orange:"#F28C28","light yellow":"#FFF2A8",purple:"#7B4BC4","dark blue":"#1F3C88",green:"#3FA34D","light green":"#A5DC86",
+  pink:"#F27BB0",red:"#D62828",brown:"#8B5A2B",blue:"#2F80ED","dark green":"#1B5E20",yellow:"#FFD60A","dark red":"#7F1D1D",gray:"#8A8F98"};
+const FOUND = {both:"Found in plant and animal cells", plant:"Found in plant cells", animal:"Found in animal cells (on our diagram)"};
+
+/* ---------- levels ---------- */
+const LEVELS = [
+  {n:1, title:"Leaf Cell Expedition", blurb:"Ride through 12 stops inside a leaf cell. At each one, type the name, pick the job, then color the part.", type:"tour", len:12},
+  {n:2, title:"Dog Paw Cell Expedition", blurb:"Spot the parts you already know, then discover two new ones.", type:"animal", len:12},
+  {n:3, title:"Crew Radio", blurb:"Cell workers are calling in. Match each job to the right organelle.", type:"quiz", len:10},
+  {n:4, title:"Border Patrol", blurb:"Sort 10 things into the right cell.", type:"sort", len:10},
+  {n:5, title:"Emergency Calls", blurb:"Six cells are in trouble. Find the broken part.", type:"case", len:6},
+  {n:6, title:"Un-Shrink Inspection", blurb:"Name 8 striped parts to grow the bus back. No number badges.", type:"boss", len:8},
+];
+const RECALL = ANIMAL_ORDER.filter(k => ORG[k].found === "both");     // 10 shared parts
+const NEWBIES = ANIMAL_ORDER.filter(k => ORG[k].found === "animal");  // lysosome, centrioles
+
+const JOBS = [
+  {q:"I check everything that comes through the gate. Who am I?", a:"membrane", d:["wall","cytoplasm","vacuole"]},
+  {q:"I keep the DNA safe and give the orders. Who am I?", a:"nucleus", d:["nucleolus","golgi","ribo"]},
+  {q:"I turn fuel into energy (ATP) for the whole city. Who am I?", a:"mito", d:["chloro","vacuole","lyso"]},
+  {q:"I sort, wrap, and ship packages. Who am I?", a:"golgi", d:["rer","ser","lyso"]},
+  {q:"I am a tiny worker that builds proteins. Who am I?", a:"ribo", d:["nucleolus","lyso","centri"]},
+  {q:"I am covered in bumps and I help make proteins. Who am I?", a:"rer", d:["ser","golgi","nucleolus"]},
+  {q:"I recycle waste and old parts with enzymes. Who am I?", a:"lyso", d:["vacuole","ser","mito"]},
+  {q:"I am a storage tank for water, food, and waste. Who am I?", a:"vacuole", d:["lyso","cytoplasm","chloro"]},
+  {q:"I capture sunlight to make sugar. Who am I?", a:"chloro", d:["mito","vacuole","wall"]},
+  {q:"I am a stiff outer layer that holds a plant cell in shape. Who am I?", a:"wall", d:["membrane","cytoplasm","vacuole"]},
+];
+const SORTS = [
+  {t:"Cell wall", a:"plant", why:"Only the plant cell has a stiff cell wall outside the membrane."},
+  {t:"Chloroplasts", a:"plant", why:"Chloroplasts capture sunlight to make sugar. They are in plant cells."},
+  {t:"Centrioles", a:"animal", why:"On our diagrams, only the animal cell shows centrioles."},
+  {t:"Lysosomes", a:"animal", why:"On our diagrams, only the animal cell shows lysosomes."},
+  {t:"Releases energy (ATP) from food", a:"both", why:"That is the job of mitochondria. Both cell types have them."},
+  {t:"Holds the DNA", a:"both", why:"The nucleus is in both cell types."},
+  {t:"One very large central vacuole", a:"plant", why:"Plant cells usually have one big vacuole. Animal cells have small ones."},
+  {t:"Golgi apparatus", a:"both", why:"Both cells need a post office to sort and ship proteins."},
+  {t:"Builds proteins", a:"both", why:"Ribosomes do this job in both cell types."},
+  {t:"Cell membrane", a:"both", why:"Every cell has a membrane. A plant cell has a wall too."},
+];
+const CASES = [
+  {t:"The Blackout", s:"A cell cannot make enough ATP. Its energy supply is failing and the cell is running out of power.", a:"mito", d:["chloro","golgi","nucleus"], cell:"animal"},
+  {t:"The Wilting Plant", s:"The cells in a leaf lost their water storage. The leaf is drooping.", a:"vacuole", d:["wall","chloro","lyso"], cell:"plant"},
+  {t:"The Lost Packages", s:"A cell builds proteins just fine, but they pile up and never get sorted or shipped out.", a:"golgi", d:["rer","ribo","lyso"], cell:"animal"},
+  {t:"The Trash Pile-Up", s:"A white blood cell swallowed bacteria, but it cannot break them down. Waste is piling up.", a:"lyso", d:["vacuole","ser","mito"], cell:"animal"},
+  {t:"The Pale Leaf", s:"Leaf cells are turning pale and cannot make sugar from sunlight.", a:"chloro", d:["mito","wall","vacuole"], cell:"plant"},
+  {t:"The Missing Tools", s:"A cell cannot build any new ribosomes. The workers have no tools.", a:"nucleolus", d:["nucleus","ribo","rer"], cell:"animal"},
+];
+const BOSS = [
+  {a:"chloro", cell:"plant"}, {a:"golgi", cell:"animal"}, {a:"vacuole", cell:"plant"}, {a:"nucleolus", cell:"animal"},
+  {a:"wall", cell:"plant"}, {a:"centri", cell:"animal"}, {a:"rer", cell:"plant"}, {a:"mito", cell:"animal"},
+];
+const CONF = {nucleus:["nucleolus"],nucleolus:["nucleus","ribo"],rer:["ser","golgi","ribo"],ser:["rer","golgi"],ribo:["rer","nucleolus"],
+  golgi:["rer","ser","lyso"],mito:["chloro","vacuole"],chloro:["mito","vacuole"],vacuole:["lyso","cytoplasm"],lyso:["vacuole","golgi"],
+  membrane:["wall","cytoplasm"],wall:["membrane"],cytoplasm:["membrane","vacuole"],centri:["ribo","nucleolus"]};
+
+
+/* ---------- story ---------- */
+let CAST = {zip:{n:"Captain Zip",c:"#FFC233",l:"Z"}, dot:{n:"Dot",c:"#7FD1AE",l:"D"}, pip:{n:"Pip",c:"#F5A3C0",l:"P"}, narr:{n:"The Cell Cruiser",c:"#BFD4F2",l:"C"}};
+let BUS_SM = `<svg viewBox="0 0 80 44" role="img" aria-label="The Cell Cruiser bus"><rect x="4" y="6" width="68" height="28" rx="9" fill="#FFC233" stroke="#14213D" stroke-width="3"/><rect x="12" y="12" width="12" height="10" rx="2" fill="#fff" stroke="#14213D" stroke-width="2"/><rect x="28" y="12" width="12" height="10" rx="2" fill="#fff" stroke="#14213D" stroke-width="2"/><rect x="44" y="12" width="12" height="10" rx="2" fill="#fff" stroke="#14213D" stroke-width="2"/><rect x="60" y="12" width="9" height="14" rx="2" fill="#fff" stroke="#14213D" stroke-width="2"/><line x1="4" y1="28" x2="72" y2="28" stroke="#14213D" stroke-width="2"/><circle cx="21" cy="34" r="6" fill="#14213D"/><circle cx="55" cy="34" r="6" fill="#14213D"/><circle cx="21" cy="34" r="2" fill="#fff"/><circle cx="55" cy="34" r="2" fill="#fff"/><line x1="38" y1="6" x2="38" y2="0" stroke="#14213D" stroke-width="3"/><circle cx="38" cy="0" r="3" fill="#E84A7F" stroke="#14213D" stroke-width="2"/></svg>`;
+let STORY = {
+  membrane:{who:"zip", text:"Shrink beam off, brakes on! We are the size of a speck, and this leaf cell has a gate with a guard. The guard scans our bus pass and the gate slides open."},
+  cytoplasm:{who:"pip", text:"Splash! Are we floating? It is like driving through thick jelly, and every building we want to visit is floating in it. Hold on tight!"},
+  nucleus:{who:"dot", text:"Look at that giant round building! Inside are shelves and shelves of instruction books. Captain Zip says this is City Hall, where the plans for the whole cell are kept."},
+  nucleolus:{who:"pip", text:"Psst, there is a busy workshop inside City Hall. It keeps cranking out tiny tools! Dot says they are called ribosomes."},
+  rer:{who:"zip", text:"Rumble, rumble! We are driving beside a bumpy assembly line. Tiny workers are building products and sending them down the line."},
+  ser:{who:"dot", text:"This part is smooth, with no bumps. A cleanup crew is spraying away harmful chemicals while another team makes fats for the city."},
+  ribo:{who:"pip", text:"Whoa, they are everywhere! Little builders float all around, each one making a protein. One just waved at me."},
+  golgi:{who:"dot", text:"A post office! Pip drops a postcard in the slot. It gets sorted, wrapped, and sent on its way."},
+  mito:{who:"zip", text:"Uh-oh, the fuel light is blinking! Good thing we found the power plant. It turns food into the energy the whole cell runs on."},
+  vacuole:{who:"pip", text:"A giant water tower! Dot jumps in a puddle. Captain Zip says this big tank keeps a plant cell firm, like a full water balloon."},
+  wall:{who:"zip", text:"Before we leave, let us circle the outside. A strong, stiff wall surrounds the whole cell. That is why a leaf stands up instead of flopping over."},
+  chloro:{who:"dot", text:"Solar farm ahead! These green parts catch sunlight and make sugar, the food that fuels the whole plant. Our bus gets a free charge, too."},
+  lyso:{who:"pip", text:"Beep beep, the cleanup trucks are rolling! Dot says this recycling center breaks down trash and old parts so the cell stays tidy."},
+  centri:{who:"zip", text:"A moving crew with long ropes! When this cell is ready to split into two, these help pull everything apart evenly."}
+};
+let INTROS = {
+  animal:{who:"zip", text:"The Cell Cruiser zips out of the leaf and into a cell from a rescue dog's paw. Look for the parts we met in the leaf. Name each striped part before the number badges show up!"},
+  3:{who:"dot", text:"The bus radio is crackling! Cell workers are calling in to tell us about their jobs. Match each job to the right organelle."},
+  4:{who:"zip", text:"Border patrol! Every part lives in plant cells, animal cells, or both. Sort each one to keep the borders safe. Stuck? Open My notes at the top."},
+  5:{who:"pip", text:"Emergency calls are coming in! Read each clue and find the broken part before the cell gets into real trouble."},
+  6:{who:"zip", text:"To un-shrink the bus we have to pass the final inspection. Name each striped part. Every right answer grows the bus a little bigger."}
+};
+let TIPS = {
+  1:{who:"zip", text:"Nice driving through the leaf! Now the Cell Cruiser heads into an animal cell. Use the same colors you just chose."},
+  2:{who:"dot", text:"Two cells down! The radio is crackling, so get ready for some games."},
+  3:{who:"zip", text:"Great radio work. Next stop: border patrol. Is each part from a plant, an animal, or both?"},
+  4:{who:"pip", text:"I hear alarms. Some cells are in trouble, and we have to figure out why."},
+  5:{who:"zip", text:"Emergencies handled. One last test and we can un-shrink the bus. The number badges will be gone, so look at each shape."},
+  6:{who:"narr", text:"The shrink beam reverses. Poof! The Cell Cruiser is back to its normal size. Finish your field notes next."}
+};
+function bubble(o){
+  const c = CAST[o.who];
+  return `<div class="bubble"><span class="av" style="background:${c.c}" aria-hidden="true">${c.l}</span><p><strong>${c.n}:</strong> ${esc(o.text)}</p><button class="btn small" data-listen="${esc(c.n+" says. "+o.text)}">Listen</button></div>`;
+}
+
+/* ---------- state (kept only in this page; nothing is saved or sent anywhere) ---------- */
+const params = new URLSearchParams(location.search);
+const UNLOCK = params.has("unlock");
+const CODE = ((params.get("code")||"BLUEBIRD").replace(/[^A-Za-z0-9 ]/g,"").toUpperCase().slice(0,24)) || "BLUEBIRD";
+const S = { view:"pick", theme:"bus", hint:{}, colors:{plant:{},animal:{}}, pen:null, notes:{done:false, sel:{}, pick:"", extra:""}, level:0, idx:0, stack:[], res:{}, chk:{}, stamped:{}, ord:{}, done:{}, who:{name:"", hour:""} };
+const OPT = { size:100, font:"standard", line:1.6, bg:"white", rate:1 };
+try { const o = JSON.parse(localStorage.getItem("cellcity-options")||"null"); if (o) Object.assign(OPT, o); } catch(e){}
+
+function applyOptions(){
+  const r = document.documentElement;
+  r.style.setProperty("--fs", (18*OPT.size/100)+"px");
+  r.style.setProperty("--lh", OPT.line);
+  r.dataset.font = OPT.font; r.dataset.bg = OPT.bg;
+  try { localStorage.setItem("cellcity-options", JSON.stringify(OPT)); } catch(e){}
+}
+applyOptions();
+
+/* ---------- helpers ---------- */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const LET = ["A","B","C","D"];
+function choicesFor(correct, pool, n=4){
+  const out=[correct];
+  const near = shuffle((CONF[correct]||[]).filter(k=>pool.includes(k)&&k!==correct));
+  for (const k of near){ if (out.length<n-1) out.push(k); }
+  for (const k of shuffle(pool)){ if (out.length<n && !out.includes(k)) out.push(k); }
+  return shuffle(out);
+}
+function orderFor(key, make){ if (!S.ord[key]) S.ord[key] = make(); return S.ord[key]; }
+function stopSpeech(){ try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){} }
+function speak(text){
+  if (!("speechSynthesis" in window)) { toast("Read-aloud is not available on this device."); return; }
+  if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+  const u = new SpeechSynthesisUtterance(text); u.rate = OPT.rate; u.lang = "en-US"; speechSynthesis.speak(u);
+}
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status"); t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2600); }
+const stars = n => "★".repeat(n)+"☆".repeat(3-n);
+
+/* ---------- scoring ---------- */
+function points(){
+  let p=0;
+  for (const k in S.res){ const r=S.res[k]; if (r.ok) p += r.tries===1?10:(r.tries===2?5:2); }
+  for (const k in S.stamped) if (S.stamped[k]) p += 5;
+  return p;
+}
+let RANKS = [[0,"Stowaway"],[100,"Passenger"],[250,"Navigator"],[380,"Co-Pilot"],[460,"Captain of the Cell Cruiser"]];
+function rankOf(p){ let r=RANKS[0][1]; for (const [m,n] of RANKS) if (p>=m) r=n; return r; }
+function levelStats(n){
+  let tot=0, first=0;
+  for (const k in S.res){ if (k.startsWith(n+":")){ tot++; if (S.res[k].ok && S.res[k].tries===1) first++; } }
+  return {tot, first};
+}
+function levelStars(n){
+  if (n===1) return 3;
+  const {tot, first} = levelStats(n); if (!tot) return 1;
+  const r = first/tot; return r>=0.9?3:(r>=0.7?2:1);
+}
+const isUnlocked = n => UNLOCK || n===1 || !!S.done[n-1];
+
+
+/* ---------- themes ---------- */
+const D20 = `<svg viewBox="0 0 64 64" role="img" aria-label="A twenty-sided die"><polygon points="32,3 58,18 58,46 32,61 6,46 6,18" fill="#D9A441" stroke="#2B1B17" stroke-width="3" stroke-linejoin="round"/><polyline points="32,3 32,17 8,45 56,45 32,17" fill="none" stroke="#2B1B17" stroke-width="2"/><polyline points="6,18 32,17 58,18" fill="none" stroke="#2B1B17" stroke-width="2"/><polyline points="6,46 8,45 32,61 56,45 58,46" fill="none" stroke="#2B1B17" stroke-width="2"/><text x="32" y="38" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="15" fill="#2B1B17">20</text></svg>`;
+const BUS_THEME = {
+  cast:CAST, icon:BUS_SM, story:STORY, intros:INTROS, tips:TIPS, ranks:RANKS,
+  levels:[
+    ["Leaf Cell Expedition","Ride through 12 stops inside a leaf cell. At each one, write the name and job, then color the part."],
+    ["Dog Paw Cell Expedition","Spot the parts you already know, then discover two new ones."],
+    ["Crew Radio","Cell workers are calling in. Match each job to the right organelle."],
+    ["Border Patrol","Sort 10 things into the right cell."],
+    ["Emergency Calls","Six cells are in trouble. Find the broken part."],
+    ["Un-Shrink Inspection","Name 8 striped parts to grow the bus back. No number badges."]],
+  tx:{
+    brand:"Cell Cruiser", h1:"Cell Cruiser",
+    tag:"Climb aboard! Captain Zip's shrinking bus is about to take your class on a field trip inside a leaf cell and an animal cell.",
+    welcome:{who:"zip", text:"Our mission: visit every part of the cell, learn its job, and record it in your digital field notes. They build as you go. Buckle up!"},
+    planTitle:"Trip plan",
+    plan:["Explore a leaf cell and a dog paw cell","Answer the crew radio, border patrol, and emergency calls","Pass the inspection to un-shrink the bus"],
+    badgeTitle:"Crew badge (optional)", start:"Shrink the bus!",
+    mapH2:"Your bus route", mapP:"The bus is shrunk and ready. Drive each stop in order.",
+    seeResults:"See my trip results", stopWord:"Stop", newWord:"New part", caseWord:"Emergency call", bossWord:"Inspection",
+    jobLabel:"City job:", sumH2:"Back at full size!",
+    sum:{who:"zip", text:"The Cell Cruiser is safe and sound, and so is the whole crew. You explored two cells and learned what each part does. Great driving!"},
+    rank:"Your crew rank:", lootTitle:"Travel passport", lootNote:"Stamps from stops you visited.", boss:"grow", heroClass:""
+  }
+};
+const QUEST_THEME = {
+  cast:{zip:{n:"The Lorekeeper",c:"#C9B6F2",l:"L"}, dot:{n:"Mira the Mage",c:"#9ED0FF",l:"M"}, pip:{n:"Brock the Knight",c:"#F2B27A",l:"B"}, narr:{n:"The Realm",c:"#E8D9A8",l:"R"}},
+  icon:D20,
+  story:{
+    membrane:{who:"zip", text:"The shrinking potion worked! We are tiny, and the Leaf Keep rises before us. Its outer gate is guarded, and the guard only lets friends and supplies through. The gate rumbles open."},
+    cytoplasm:{who:"pip", text:"Ugh, my boots are sticky! The whole keep is filled with a thick, jelly-like moat, and every room floats in it. Mira, can you cast a spell to dry my boots?"},
+    nucleus:{who:"dot", text:"The great hall! Shelves of spell books stretch to the ceiling. The Lorekeeper says this is the throne room, where the plans that rule the whole keep are stored."},
+    nucleolus:{who:"pip", text:"A secret forge hides inside the great hall. It hammers out tiny tools called ribosomes and sends them off to the workers."},
+    rer:{who:"zip", text:"Clank, clank! This bumpy workshop is an assembly line. Tiny workers build products and pass them along the line."},
+    ser:{who:"dot", text:"These halls are smooth and clean. Apprentices brew oils and fats here and wash away harmful potions."},
+    ribo:{who:"pip", text:"Tiny builders swarm everywhere! Each one is crafting a protein. One just handed me a little wooden sword."},
+    golgi:{who:"dot", text:"The courier guild! Brock sends a scroll to his mom. The couriers sort it, wrap it, and send it off with the right stamp."},
+    mito:{who:"zip", text:"Our torches are fading! Follow the glow to the great furnace. It burns food to make the energy that powers the whole keep."},
+    vacuole:{who:"pip", text:"A giant reservoir! Mira dips her staff in. The Lorekeeper says this water keeps a plant cell firm, like a full waterskin."},
+    wall:{who:"zip", text:"Let us climb the battlements. A thick, stiff wall rings the whole keep. It holds the shape and keeps a leaf standing tall."},
+    chloro:{who:"dot", text:"The sun gardens! Green crystals catch sunlight and craft it into sugar, the food that feeds the whole plant. Our torches glow brighter, too."},
+    lyso:{who:"pip", text:"A recycling cauldron bubbles! The cleanup crew melts down trash and old parts so the keep stays tidy."},
+    centri:{who:"zip", text:"A rope crew! When this keep splits into two, they help haul everything apart evenly."}
+  },
+  intros:{
+    animal:{who:"zip", text:"The shrinking spell hurls us out of the leaf and into a keep inside a rescue dog's paw! Name each striped room you already know before the room numbers appear."},
+    3:{who:"dot", text:"The tavern is loud tonight! Townsfolk shout out their jobs. Match each riddle to the right organelle."},
+    4:{who:"zip", text:"The border guard blocks the road! Every part belongs to plant cells, animal cells, or both. Sort each one to pass. Stuck? Open My notes at the top."},
+    5:{who:"pip", text:"Distress scrolls have arrived! Read each clue and find the broken part before the keep falls."},
+    6:{who:"zip", text:"The Shrink Curse blocks our way home! Name each striped part to strike it. Every right answer drains its power."}
+  },
+  tips:{
+    1:{who:"zip", text:"Well done, heroes! The Leaf Keep is mapped. Now we face the Paw Keep, and the colors you chose carry over."},
+    2:{who:"dot", text:"Two keeps explored! The tavern games are next."},
+    3:{who:"zip", text:"Great riddle solving. Next: the border guard. Is each part from a plant, an animal, or both?"},
+    4:{who:"pip", text:"Do you hear that? Distress scrolls are arriving. Some keeps are in trouble, and we have to find out why."},
+    5:{who:"zip", text:"Every scroll answered. Now the final fight with the Shrink Curse. The room numbers are gone, so look at each shape."},
+    6:{who:"narr", text:"The curse shatters! The party grows back to full size. Finish your field notes next."}
+  },
+  ranks:[[0,"Squire"],[100,"Adventurer"],[250,"Knight"],[380,"Paladin"],[460,"Archmage of the Living Cell"]],
+  levels:[
+    ["The Leaf Keep Quest","Explore 12 rooms of a leaf cell keep. In each one, type the name, pick the job, then color the part."],
+    ["The Paw Keep Quest","Spot the rooms you already know, then discover two new ones."],
+    ["Tavern Riddles","Townsfolk shout out their jobs. Match each riddle to the right organelle."],
+    ["Border Guard","Sort 10 things into the right cell."],
+    ["Distress Scrolls","Six keeps are in trouble. Find the broken part."],
+    ["Boss: The Shrink Curse","Name 8 striped parts to defeat the curse. No room numbers."]],
+  tx:{
+    brand:"Cell Quest", h1:"Cell Quest",
+    tag:"Gather your party! A shrinking potion is about to send your class on a quest inside a leaf cell and an animal cell. Every part is a room with a job.",
+    welcome:{who:"zip", text:"Our quest: explore every room of the cell, learn its job, and record it in your digital field notes. They build as you go. Roll for initiative!"},
+    planTitle:"Quest plan",
+    plan:["Explore the Leaf Keep and the Paw Keep","Solve tavern riddles, border guard tests, and distress scrolls","Defeat the Shrink Curse to grow back to full size"],
+    badgeTitle:"Hero card (optional)", start:"Roll for initiative!",
+    mapH2:"Your quest map", mapP:"The curse is waiting at the end. Clear each stage in order.",
+    seeResults:"See my quest results", stopWord:"Room", newWord:"New room", caseWord:"Distress scroll", bossWord:"Strike",
+    jobLabel:"Keep job:", sumH2:"Curse broken!",
+    sum:{who:"zip", text:"The Shrink Curse is gone, and the whole party is back to full size. You explored two keeps and learned what every room does. A fine quest!"},
+    rank:"Your hero rank:", lootTitle:"Loot bag", lootNote:"Treasure from rooms you cleared.", boss:"hp"
+  }
+};
+const THEMES = {bus:BUS_THEME, quest:QUEST_THEME};
+let TX = BUS_THEME.tx;
+function setTheme(name){
+  const T = THEMES[name]; S.theme = name; TX = T.tx;
+  CAST=T.cast; BUS_SM=T.icon; STORY=T.story; INTROS=T.intros; TIPS=T.tips; RANKS=T.ranks;
+  LEVELS.forEach((L,i)=>{ L.title=T.levels[i][0]; L.blurb=T.levels[i][1]; });
+  document.documentElement.dataset.theme = name;
+}
+
+
+/* ---------- themed spray on correct answers ---------- */
+const SPRAY = {bus:["🚌","⭐","🔬","🧪","✨","🧬"], quest:["⚔️","🛡️","🪙","✨","🐉","👑"]};
+function burst(el, n){
+  if (!el.animate) return;
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const set = SPRAY[S.theme] || SPRAY.bus;
+  requestAnimationFrame(()=>{
+    const r = el.getBoundingClientRect(); const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    if (reduce){
+      // gentle version: icons appear around the answer and fade, with no flying motion
+      const k = 8;
+      for (let i=0;i<k;i++){
+        const s = document.createElement("span"); s.className="spray"; s.setAttribute("aria-hidden","true");
+        s.textContent = set[i % set.length]; s.style.fontSize="28px";
+        const ang = (i/k)*Math.PI*2;
+        s.style.left = (cx + Math.cos(ang)*Math.min(r.width/2.2, 150))+"px"; s.style.top = (cy + Math.sin(ang)*28)+"px";
+        s.style.transform="translate(-50%,-50%)"; document.body.appendChild(s);
+        const a = s.animate([{opacity:0},{opacity:1,offset:.2},{opacity:1,offset:.7},{opacity:0}],{duration:1400});
+        a.onfinish = () => s.remove();
+      }
+      return;
+    }
+    for (let i=0;i<n;i++){
+      const s = document.createElement("span"); s.className="spray"; s.setAttribute("aria-hidden","true");
+      s.textContent = set[i % set.length]; s.style.left = cx+"px"; s.style.top = cy+"px"; s.style.fontSize = (20+Math.random()*16)+"px";
+      document.body.appendChild(s);
+      const ang = -Math.PI/2 + (Math.random()-.5)*Math.PI*1.15, dist = 90 + Math.random()*170;
+      const dx = Math.cos(ang)*dist, dy = Math.sin(ang)*dist, rot = (Math.random()-.5)*360;
+      const a = s.animate([
+        {transform:"translate(-50%,-50%) scale(.4)", opacity:1},
+        {transform:`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.1) rotate(${rot/2}deg)`, opacity:1, offset:.45},
+        {transform:`translate(calc(-50% + ${dx*1.2}px), calc(-50% + ${dy+190}px)) scale(.9) rotate(${rot}deg)`, opacity:0}
+      ], {duration:1100+Math.random()*600, easing:"cubic-bezier(.2,.7,.4,1)"});
+      a.onfinish = () => s.remove();
+    }
+  });
+}
+
+
+/* ---------- digital coloring ---------- */
+const PALETTE = ["red","dark red","orange","yellow","light yellow","light green","green","dark green","teal","light blue","blue","dark blue","purple","pink","brown","tan","gray"].map(n=>[n,SWATCH[n]]);
+const ALIAS = {membrane:["cell membrane","membrane","plasma membrane"], cytoplasm:["cytoplasm"], nucleus:["nucleus"], nucleolus:["nucleolus"],
+  rer:["rough er","rough endoplasmic reticulum"], ser:["smooth er","smooth endoplasmic reticulum"], ribo:["ribosome","ribosomes"],
+  golgi:["golgi apparatus","golgi","golgi body","golgi complex"], mito:["mitochondria","mitochondrion"], vacuole:["vacuole","central vacuole"],
+  wall:["cell wall","wall"], chloro:["chloroplast","chloroplasts"], lyso:["lysosome","lysosomes"], centri:["centriole","centrioles"]};
+const norm = s => s.toLowerCase().replace(/[^a-z ]/g,"").replace(/\s+/g," ").trim();
+function nameMatches(key, text){ const n = norm(text); if (!n) return false; return ALIAS[key].some(a => a===n || a+"s"===n || a===n+"s"); }
+function paintOrg(svg, key, hex){
+  $$(`.org[data-org="${key}"]`, svg).forEach(g=>{
+    if (key==="membrane"){ $$("*:not(.hit)", g).forEach(e=>{ e.style.stroke=hex; e.style.strokeWidth="7px"; }); }
+    else if (key==="cytoplasm"){ $$("[fill-opacity]", g).forEach(e=>{ e.style.fill=hex; e.style.fillOpacity=".35"; }); }
+    else { $$('[fill="#fff"]', g).forEach(e=>{ e.style.fill=hex; }); }
+  });
+}
+function applyColors(svg, cell){ for (const k in S.colors[cell]) paintOrg(svg, k, S.colors[cell][k]); }
+function penFor(key, cell){
+  const hex = (cell==="animal" && S.colors.plant[key]) || SWATCH[ORG[key].color];
+  const hit = PALETTE.find(p=>p[1]===hex); return {name: hit?hit[0]:ORG[key].color, hex};
+}
+function paletteHTML(sug, lead){
+  const sugName = sug ? sug.name : "";
+  return `<div class="palette" role="group" aria-label="Pick a color">${PALETTE.map(([n,h])=>`<button class="pc ${sug&&sug.hex===h?"sug":""}" data-pen="${h}" data-pname="${n}" title="${n}" aria-label="${n}${sug&&sug.hex===h?" (suggested)":""}" aria-pressed="${!!(S.pen&&S.pen.hex===h)}" style="background:${h}"><span>✓</span></button>`).join("")}</div>
+  <p class="note" id="penName" data-sug="${esc(sugName)}" data-lead="${esc(lead||"Try")}">${S.pen?"Selected color: "+S.pen.name:(sug?`No color picked yet. ${esc(lead||"Try")} <b>${esc(sugName)}</b> (the dotted box), or choose any color.`:"No color picked yet.")}</p>`;
+}
+function jobChoices(key, cell){
+  const order = cell==="plant"?PLANT_ORDER:ANIMAL_ORDER;
+  const near = shuffle((CONF[key]||[]).filter(k=>order.includes(k)&&k!==key));
+  const out = [key, ...near.slice(0,2)];
+  for (const k of shuffle(order)){ if (out.length<3 && !out.includes(k)) out.push(k); }
+  return shuffle(out);
+}
+const GF = {A:"Describe your own cell as a city. Name a building for 3 organelles.", B:"Why does a plant cell need both a cell wall and a cell membrane?", C:"Which organelle would a muscle cell have lots of, and why?"};
+
+/* ---------- navigation ---------- */
+function go(view, level=0, idx=0){
+  stopSpeech();
+  S.stack.push({view:S.view, level:S.level, idx:S.idx});
+  S.view=view; S.level=level; S.idx=idx; render(); window.scrollTo(0,0);
+}
+function back(){
+  stopSpeech();
+  const p = S.stack.pop(); if (!p) return;
+  S.view=p.view; S.level=p.level; S.idx=p.idx; render(); window.scrollTo(0,0);
+}
+function nextStep(){
+  const L = LEVELS[S.level-1];
+  if (S.idx+1 < L.len){ go("step", S.level, S.idx+1); }
+  else { S.done[S.level]=true; go("levelDone", S.level, 0); }
+}
+
+/* ---------- shell ---------- */
+function shell(inner){
+  const p = points();
+  return `<header class="top">
+    ${S.view!=="pick" ? `<button class="btn small" id="back" aria-label="Go back">← Back</button>` : ``}
+    <div class="brand">${S.view==="pick" ? "Cell Adventures" : BUS_SM+TX.brand}</div>
+    ${(S.view!=="welcome" && S.view!=="pick") ? `<span class="chip" aria-label="Points and rank">${p} points · ${esc(rankOf(p))}</span>` : ``}
+    ${(S.view!=="welcome" && S.view!=="pick") ? `<button class="btn small" id="notesBtn" aria-haspopup="dialog">My notes</button>` : ``}
+    <button class="btn small" id="opts" aria-haspopup="dialog">Reading options</button>
+  </header>
+  <main id="main" tabindex="-1">${inner}</main>`;
+}
+function render(){
+  const app = $("#app");
+  let html = "";
+  if (S.view==="pick") html = vPick();
+  else if (S.view==="welcome") html = vWelcome();
+  else if (S.view==="map") html = vMap();
+  else if (S.view==="step") html = vStep();
+  else if (S.view==="levelDone") html = vLevelDone();
+  else if (S.view==="notes") html = vNotes();
+  else if (S.view==="summary") html = vSummary();
+  app.innerHTML = shell(html);
+  const b = $("#back"); if (b) b.onclick = back;
+  $("#opts").onclick = openOptions;
+  const nb = $("#notesBtn"); if (nb) nb.onclick = ()=>openNotes();
+  const rb = $("#refBtn"); if (rb) rb.onclick = ()=>openNotes("compare");
+  wire();
+  const m=$("#main"); if (m) m.focus({preventScroll:true});
+}
+
+/* ---------- views ---------- */
+function vPick(){
+  return `<section class="hero"><h1>Choose your adventure</h1>
+    <p class="tag">Both adventures teach the same cell parts. Everything happens on your screen, so you do not need paper. Pick the one you want to play.</p>
+    <div class="picks">
+      <div class="card pick"><div class="pickart">${BUS_THEME.icon}</div>
+        <h2>Cell Cruiser</h2><p class="kind">A shrinking bus adventure, in the style of the Magic School Bus</p>
+        <p>Ride a bus shrunk to the size of a speck. Explore a leaf cell and a dog paw cell with Captain Zip, Dot, and Pip.</p>
+        <button class="btn primary" data-theme="bus">Start the bus adventure</button></div>
+      <div class="card pick"><div class="pickart">${QUEST_THEME.icon}</div>
+        <h2>Cell Quest</h2><p class="kind">A fantasy quest, in the style of Dungeons and Dragons</p>
+        <p>Gather a party and explore two keeps, with riddles, treasure, and a boss fight against the Shrink Curse.</p>
+        <button class="btn primary" data-theme="quest">Start the quest</button></div>
+    </div></section>`;
+}
+
+function vWelcome(){
+  return `<section class="hero" id="hero">
+    <div class="herobus" id="herobus" aria-hidden="true">${BUS_SM}</div>
+    <h1>${TX.h1}</h1>
+    <p class="tag">${TX.tag}</p>
+    ${bubble(TX.welcome)}
+    <div class="setup">
+      <div class="card"><h2>Before you start</h2>
+        <ul><li>This screen. No paper needed.</li><li>You will type names, pick jobs, and color the diagrams</li><li>Your field notes build as you go</li></ul>
+        <p class="note">Headphones help if you use the Listen buttons.</p></div>
+      <div class="card"><h2>${TX.planTitle}</h2>
+        <ul>${TX.plan.map(x=>`<li>${x}</li>`).join("")}</ul>
+        <p class="note">Nothing you do here is saved or sent anywhere.</p></div>
+      <div class="card"><h2>${TX.badgeTitle}</h2>
+        <label class="fld" for="nm">Name</label><input id="nm" type="text" autocomplete="off" value="${esc(S.who.name)}">
+        <label class="fld" for="hr">Hour</label><input id="hr" type="text" autocomplete="off" value="${esc(S.who.hour)}">
+        <p class="note">Tap <b>Reading options</b> at the top to change text size, spacing, and background.</p></div>
+    </div>
+    <div class="row"><button class="btn primary" id="start">${TX.start}</button><span id="countdown" class="note" role="status"></span></div>
+  </section>`;
+}
+
+function vMap(){
+  const items = LEVELS.map(L=>{
+    const done = !!S.done[L.n], open = isUnlocked(L.n);
+    const cls = done?"done":(open?"next":"locked");
+    const status = done ? `<span class="stars" aria-label="${levelStars(L.n)} of 3 stars">${stars(levelStars(L.n))}</span>` : (open ? `` : `<span class="meta">Finish level ${L.n-1} to open this</span>`);
+    return `<li class="stop ${cls}"><div class="dot" aria-hidden="true">${done?"✓":L.n}</div>
+      <div class="card"><h3>Level ${L.n}: ${esc(L.title)}</h3><p>${esc(L.blurb)}</p>
+      <div class="row" style="margin-top:6px">${open?`<button class="btn small ${done?"":"primary"}" data-lvl="${L.n}">${done?"Play again":"Go"}</button>`:""}${status}</div></div></li>`;
+  }).join("");
+  const allDone = LEVELS.every(L=>S.done[L.n]);
+  return `<h2 style="margin-top:22px">${TX.mapH2}</h2>
+    <p>${TX.mapP}</p>
+    <ol class="route">${items}</ol>
+    ${allDone?`<div class="row"><button class="btn primary" id="toSummary">${TX.seeResults}</button></div>`:""}`;
+}
+
+function diagramHTML(cell, key, opts={}){
+  const cap = opts.cap || (cell==="plant"?"Leaf cell (a plant cell)":"Dog paw cell (an animal cell)");
+  return `<div class="diagram" ${opts.paint?`data-colorcell="${cell}"`:""} ${opts.clickpaint?`data-clickpaint="${opts.clickpaint}"`:""}><p class="cap">${cap}</p>${SVG[cell]}</div>`;
+}
+function lighten(hex, w){
+  const n=parseInt(hex.slice(1),16); const r=n>>16&255,g=n>>8&255,b=n&255;
+  const m=v=>Math.round(v+(255-v)*w).toString(16).padStart(2,"0"); return "#"+m(r)+m(g)+m(b);
+}
+function focusDiagram(root, key, hideBadges, color){
+  const svg = $("svg", root); if (!svg) return;
+  if (!svg.querySelector("pattern")) svg.insertAdjacentHTML("afterbegin", '<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fff"/><line x1="0" y1="0" x2="0" y2="8" stroke="#14213D" stroke-width="2.4"/></pattern></defs>');
+  if (color) svg.style.setProperty("--hl", lighten(color, 0.4)); else svg.style.removeProperty("--hl");
+  svg.classList.add("cellsvg"); svg.classList.toggle("nobadge", !!hideBadges);
+  $$(".org,.badge", svg).forEach(g=>g.classList.remove("hl"));
+  if (key){ svg.classList.add("focus");
+    $$(`.org[data-org="${key}"]`, svg).forEach(g=>g.classList.add("hl"));
+    $$(`.badge[data-badge="${key}"]`, svg).forEach(g=>g.classList.add("hl"));
+    if (key==="membrane" && !svg.querySelector(".hit-layer")){
+      const src = svg.querySelector('.org[data-org="membrane"]');
+      if (src){
+        const layer = document.createElementNS("http://www.w3.org/2000/svg","g");
+        layer.setAttribute("class","org hit-layer"); layer.setAttribute("data-org","membrane");
+        [...src.children].forEach(e=>{ const c=e.cloneNode(false); c.setAttribute("class","hit"); c.removeAttribute("style"); layer.appendChild(c); });
+        svg.appendChild(layer);
+      }
+    } }
+  else svg.classList.remove("focus");
+}
+
+function vStep(){
+  const L = LEVELS[S.level-1];
+  const pct = Math.round(((S.idx)/L.len)*100);
+  const sc = (L.type==="boss" && TX.boss==="grow") ? (0.45+0.55*pct/100).toFixed(2) : 1;
+  const prog = (L.type==="boss" && TX.boss==="hp")
+    ? `<div class="bossbar" role="progressbar" aria-valuemin="0" aria-valuemax="${L.len}" aria-valuenow="${S.idx}" aria-label="Shrink Curse power left"><span>Shrink Curse power</span><div class="hp"><div style="width:${100-pct}%"></div></div></div>`
+    : `<div class="trail" role="progressbar" aria-valuemin="0" aria-valuemax="${L.len}" aria-valuenow="${S.idx}" aria-label="Progress"><div class="fill" style="width:${pct}%"></div><span class="bus" style="left:${pct}%;transform:translateX(-${pct}%) scale(${sc})">${BUS_SM}</span></div>`;
+  if (L.type==="tour") return tourStep("plant", PLANT_ORDER[S.idx], S.idx, L, prog);
+  if (L.type==="animal"){
+    if (S.idx < RECALL.length) return recallStep(RECALL[S.idx], S.idx, L, prog);
+    return tourStep("animal", NEWBIES[S.idx-RECALL.length], S.idx, L, prog, true);
+  }
+  if (L.type==="quiz") return quizStep(L, prog);
+  if (L.type==="sort") return sortStep(L, prog);
+  if (L.type==="case") return caseStep(L, prog);
+  if (L.type==="boss") return bossStep(L, prog);
+}
+
+function wordHelp(o){
+  if (!o.words || !o.words.length) return "";
+  return `<details class="words"><summary>Word help</summary><dl>${o.words.map(w=>`<dt>${esc(w[0])}</dt><dd>${esc(w[1])}</dd>`).join("")}</dl></details>`;
+}
+function swatchHTML(c){ return `<span class="swatch" style="background:${SWATCH[c]||"#fff"}" aria-hidden="true"></span>`; }
+
+function tourStep(cell, key, idx, L, prog, isNew){
+  const o = ORG[key];
+  const id = `${S.level}:${idx}`;
+  const c = S.chk[id] || (S.chk[id]=[false,false,false]);
+  const total = L.len;
+  const found = FOUND[o.found];
+  const jobOrd = orderFor(id+"j", ()=>jobChoices(key, cell));
+  if (!c[2]) S.pen = null;
+  const sug = penFor(key, cell);
+  const bank = [...new Set([...PLANT_ORDER,...ANIMAL_ORDER])].map(k=>ORG[k].name).sort().join(", ");
+  const copies = ["ribo","mito","chloro","vacuole","lyso"].includes(key) ? " This part has more than one copy. Coloring one colors them all." : "";
+  return `${prog}<p class="stepno">${isNew?TX.newWord:TX.stopWord} ${idx+1} of ${total}</p>
+  ${bubble(STORY[key])}
+  <div class="tour" data-focus="${key}" data-cell="${cell}" data-color="${SWATCH[o.color]||""}">
+    <div>${diagramHTML(cell,key,{paint:true, clickpaint:key})}</div>
+    <div class="card">
+      <h2>${esc(o.name)}</h2>
+      <span class="found">${found}</span>
+      <p>${esc(o.explain)}</p>
+      <p class="city"><strong>${TX.jobLabel}</strong> ${esc(o.city)}</p>
+      ${wordHelp(o)}
+      <div class="row" style="margin-top:4px"><button class="btn small" data-listen="${esc(o.name+". "+found+". "+o.explain+" City job. "+o.city)}">Listen</button></div>
+      <div class="todo2">
+        <h3>1. Type the name</h3>
+        <div class="nm"><input id="nameIn" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the name of this part" value="${c[0]?esc(o.name):""}" ${c[0]?"disabled":""}>${c[0]?`<span class="ok" id="nameOk">✓ Correct</span>`:`<span class="ok" id="nameOk"></span><button class="btn small" id="nameHelp">${S.hint[id]?"Show me the answer":"Give me the first letter"}</button>`}</div>
+        <p class="note" id="hintMsg">${S.hint[id]&&!c[0]?"It starts with "+o.name[0].toUpperCase()+".":""}</p>
+        <details class="words"><summary>Word bank</summary><p>${esc(bank)}</p></details>
+        <h3>2. Pick the job</h3>
+        <div id="jobs">${jobOrd.map((k,i)=>{ const done=c[1]; const st = done&&k===key?"correct":""; return `<button class="choice ${st}" data-job="${k}" ${done?"disabled":""}><span class="letter">${LET[i]}</span><span class="txt">${esc(ORG[k].job)}</span>${st?`<span class="tag">Correct</span>`:""}</button>`; }).join("")}</div>
+        <h3>3. Color it</h3>
+        <p>Pick a color, then click the striped part on the diagram.${copies}</p>
+        ${paletteHTML(sug, "Try")}<p class="ok" id="colNote">${c[2]?"✓ Colored":""}</p>
+      </div>
+      <div class="row"><button class="btn primary" id="stamp" ${c.every(Boolean)||UNLOCK?"":"disabled"}>Stamp it and go on</button></div>
+    </div>
+  </div>`;
+}
+
+function recallStep(key, idx, L, prog){
+  const o = ORG[key]; const id = `${S.level}:${idx}`;
+  const r = S.res[id] || {tries:0, ok:false, wrong:[]};
+  const ord = orderFor(id, ()=>choicesFor(key, ANIMAL_ORDER));
+  const c = S.chk[id] || (S.chk[id]=[false]);
+  const solved = r.ok;
+  if (solved && !c[0]) S.pen = null;
+  const sug = penFor(key, "animal");
+  const ch = ord.map((k,i)=>{
+    const st = solved && k===key ? "correct" : (r.wrong.includes(k)?"wrong":"");
+    const tag = st==="correct"?`<span class="tag">Correct</span>`:(st==="wrong"?`<span class="tag">Not this one</span>`:"");
+    return `<button class="choice ${st}" data-pick="${k}" ${solved||r.wrong.includes(k)?"disabled":""}><span class="letter">${LET[i]}</span><span class="txt">${esc(ORG[k].name)}</span>${tag}</button>`;
+  }).join("");
+  const hint = !solved && r.wrong.length ? `<div class="fb bad" role="status">Hint: this part ${esc(o.job)}.</div>` : "";
+  const done = solved ? `<div class="fb good" role="status"><strong>Yes, it is the ${esc(o.name)}.</strong> It is number ${o.num}. Its job: ${esc(o.job)}.</div>
+    <h3>Color it the same as before</h3>
+    <div class="prevcolor"><span class="sw" style="background:${sug.hex}" role="img" aria-label="${esc(sug.name)}"></span><span>${S.colors.plant[key]?"Your leaf cell color":"Suggested color"}: <b>${esc(sug.name)}</b></span><button class="btn small" id="usePrev" data-hex="${sug.hex}">Use this color</button></div>
+    <p>Pick that color, then click the striped part on the diagram.</p>
+    <details class="words"><summary>Show my leaf cell</summary><div class="diagram" data-colorcell="plant">${SVG.plant}</div></details>
+    ${paletteHTML(sug, "Use the same color as before:")}<p class="ok" id="colNote">${c[0]?"✓ Colored":""}</p>
+    <div class="row"><button class="btn primary" id="next" ${c[0]||UNLOCK?"":"disabled"}>Next part</button></div>` : "";
+  return `${prog}<p class="stepno">Quick-find ${idx+1} of ${RECALL.length}, then 2 new parts</p>
+  ${idx===0?bubble(INTROS.animal):""}
+  <div class="tour" data-focus="${key}" data-cell="animal" data-hide="${solved?"0":"1"}">
+    <div>${diagramHTML("animal",key,{cap:"Dog paw cell (an animal cell)", paint:true, clickpaint: solved?key:""})}</div>
+    <div class="card"><h2>Which part is striped?</h2>
+      <p>You met this part in the plant cell. Name it before the number badges show up.</p>
+      ${ch}${hint}
+      <div class="row"><button class="btn small" data-listen="Which part is striped? ${esc(ord.map((k,i)=>LET[i]+". "+ORG[k].name).join(". "))}">Listen</button></div>
+      ${done}
+    </div></div>`;
+}
+
+function quizFrame(L, prog, qno, body){
+  return `${prog}<p class="stepno">Question ${qno} of ${L.len}</p>${S.idx===0?`<div class="quiz" style="margin-bottom:0">${bubble(INTROS[S.level])}</div>`:""}<div class="quiz card">${body}</div>`;
+}
+function choiceBlock(id, ord, key, solved, r, extra){
+  return ord.map((k,i)=>{
+    const st = solved && k===key ? "correct" : (r.wrong.includes(k)?"wrong":"");
+    const tag = st==="correct"?`<span class="tag">Correct</span>`:(st==="wrong"?`<span class="tag">Not this one</span>`:"");
+    return `<button class="choice ${st}" data-pick="${k}" ${solved||r.wrong.includes(k)?"disabled":""}><span class="letter">${LET[i]}</span><span class="txt">${esc(ORG[k].name)}</span>${tag}</button>`;
+  }).join("");
+}
+
+function quizStep(L, prog){
+  const id=`${S.level}:${S.idx}`; const q=JOBS[S.idx];
+  const r=S.res[id]||{tries:0,ok:false,wrong:[]};
+  const ord=orderFor(id,()=>shuffle([q.a,...q.d]));
+  const listen = `${q.q} ${ord.map((k,i)=>LET[i]+". "+ORG[k].name).join(". ")}`;
+  const fb = r.ok ? `<div class="fb good" role="status"><strong>Right.</strong> The ${esc(ORG[q.a].name)} ${esc(ORG[q.a].job)}.</div>` :
+    (r.wrong.length?`<div class="fb bad" role="status">Not that one. Read the clue again and try another.</div>`:"");
+  return quizFrame(L, prog, S.idx+1, `<p class="qprompt">${esc(q.q)}</p>${choiceBlock(id,ord,q.a,r.ok,r)}${fb}
+    <div class="row"><button class="btn small" data-listen="${esc(listen)}">Listen</button><span class="spacer"></span>${r.ok?`<button class="btn primary" id="next">${S.idx+1<L.len?"Next question":"Finish level"}</button>`:""}</div>`);
+}
+
+function sortStep(L, prog){
+  const id=`${S.level}:${S.idx}`; const q=SORTS[S.idx];
+  const r=S.res[id]||{tries:0,ok:false,wrong:[]};
+  const opts=[["plant","Plant cell only"],["animal","Animal cell only"],["both","Both cells"]];
+  const btns = opts.map(([k,t])=>{
+    const st = r.ok && k===q.a ? "correct" : (r.wrong.includes(k)?"wrong":"");
+    const tag = st==="correct"?` <span class="tag">Correct</span>`:(st==="wrong"?` <span class="tag">Not this one</span>`:"");
+    return `<button class="choice ${st}" data-sort="${k}" ${r.ok||r.wrong.includes(k)?"disabled":""}>${t}${tag}</button>`;
+  }).join("");
+  const fb = r.ok ? `<div class="fb good" role="status"><strong>Right.</strong> ${esc(q.why)}</div>` : (r.wrong.length?`<div class="fb bad" role="status">Not that one. Think about what each cell has, then try again.</div>`:"");
+  return quizFrame(L, prog, S.idx+1, `<p class="qprompt">On our diagrams, which cell has this?</p>
+    <p class="note">Stuck? Open My notes and look at the Plant vs. animal page.</p><div class="bigword">${esc(q.t)}</div><div class="sort3">${btns}</div>${fb}
+    <div class="row"><button class="btn small" id="refBtn">Open My notes</button><button class="btn small" data-listen="On our diagrams, which cell has this? ${esc(q.t)}. Plant cell only, animal cell only, or both cells.">Listen</button><span class="spacer"></span>${r.ok?`<button class="btn primary" id="next">${S.idx+1<L.len?"Next item":"Finish level"}</button>`:""}</div>`);
+}
+
+function caseStep(L, prog){
+  const id=`${S.level}:${S.idx}`; const q=CASES[S.idx];
+  const r=S.res[id]||{tries:0,ok:false,wrong:[]};
+  const ord=orderFor(id,()=>shuffle([q.a,...q.d]));
+  const listen = `Case ${S.idx+1}. ${q.t}. ${q.s} Which organelle is the problem? ${ord.map((k,i)=>LET[i]+". "+ORG[k].name).join(". ")}`;
+  const fb = r.ok ? `<div class="fb good" role="status"><strong>Problem solved.</strong> The ${esc(ORG[q.a].name)} ${esc(ORG[q.a].job)}. ${esc(ORG[q.a].explain)}</div>` :
+    (r.wrong.length?`<div class="fb bad" role="status">Not the culprit. Re-read the clue: what job is missing?</div>`:"");
+  const mini = r.ok ? `<div class="mini" data-focus="${q.a}" data-cell="${q.cell}" data-hide="0">${diagramHTML(q.cell,q.a)}</div>` : "";
+  return `${prog}<p class="stepno">${TX.caseWord} ${S.idx+1} of ${L.len}</p>${S.idx===0?`<div class="quiz" style="margin-bottom:0">${bubble(INTROS[5])}</div>`:""}<div class="quiz card">
+    <h2>${esc(q.t)}</h2><div class="scene">${esc(q.s)}</div>
+    <p class="qprompt">Which organelle is the problem?</p>${choiceBlock(id,ord,q.a,r.ok,r)}${fb}${mini}
+    <div class="row"><button class="btn small" data-listen="${esc(listen)}">Listen</button><span class="spacer"></span>${r.ok?`<button class="btn primary" id="next">${S.idx+1<L.len?"Next case":"Finish level"}</button>`:""}</div></div>`;
+}
+
+function bossStep(L, prog){
+  const id=`${S.level}:${S.idx}`; const q=BOSS[S.idx];
+  const r=S.res[id]||{tries:0,ok:false,wrong:[]};
+  const pool = q.cell==="plant"?PLANT_ORDER:ANIMAL_ORDER;
+  const ord=orderFor(id,()=>choicesFor(q.a,pool));
+  const fb = r.ok ? `<div class="fb good" role="status"><strong>Yes.</strong> The ${esc(ORG[q.a].name)} ${esc(ORG[q.a].job)}.</div>` :
+    (r.wrong.length?`<div class="fb bad" role="status">Not this one. Look at its shape and where it sits in the cell.</div>`:"");
+  return `${prog}<p class="stepno">${TX.bossWord} ${S.idx+1} of ${L.len}</p>
+  ${S.idx===0?bubble(INTROS[6]):""}
+  <div class="tour" data-focus="${q.a}" data-cell="${q.cell}" data-hide="1">
+    <div>${diagramHTML(q.cell,q.a)}</div>
+    <div class="card"><h2>What is the striped part?</h2>
+      ${choiceBlock(id,ord,q.a,r.ok,r)}${fb}
+      <div class="row"><button class="btn small" data-listen="What is the striped part? ${esc(ord.map((k,i)=>LET[i]+". "+ORG[k].name).join(". "))}">Listen</button><span class="spacer"></span>${r.ok?`<button class="btn primary" id="next">${S.idx+1<L.len?"Next part":"Finish level"}</button>`:""}</div>
+    </div></div>`;
+}
+
+
+function vLevelDone(){
+  const L = LEVELS[S.level-1]; const st = levelStats(S.level);
+  const acc = st.tot ? `<p>First-try answers: <strong>${st.first} of ${st.tot}</strong></p>` : "";
+  const last = S.level===LEVELS.length;
+  return `<div class="quiz card" style="margin-top:22px"><h2>Level ${L.n} complete: ${esc(L.title)}</h2>
+    <p class="stars" style="font-size:1.8rem" aria-label="${levelStars(L.n)} of 3 stars">${stars(levelStars(L.n))}</p>${acc}
+    ${bubble(TIPS[L.n])}
+    <div class="row"><button class="btn primary" id="cont">${last?"Finish my field notes":`Continue to level ${L.n+1}`}</button><button class="btn" id="toMap">Route map</button></div></div>`;
+}
+
+function vNotes(){
+  const N = S.notes;
+  const names = [...new Set([...PLANT_ORDER,...ANIMAL_ORDER])].map(k=>[k,ORG[k].name]).sort((a,b)=>a[1].localeCompare(b[1]));
+  const sel = id => `<select data-sel="${id}" aria-label="Choose a part"><option value="">choose</option>${names.map(([k,n])=>`<option value="${k}" ${N.sel[id]===k?"selected":""}>${esc(n)}</option>`).join("")}</select>`;
+  return `<h2 style="margin-top:22px">Finish your field notes</h2>
+  ${bubble(TIPS[6])}
+  <div class="card"><h2>Compare the two cells</h2>
+    <p class="note">Use what you learned. Pick a part for each blank.</p>
+    <p class="sentence">Both cells have ${sel("a0")}, ${sel("a1")}, and ${sel("a2")}.</p>
+    <p class="sentence">Only the plant cell shows ${sel("b0")} and ${sel("b1")}.</p>
+    <p class="sentence">Only the animal cell shows ${sel("c0")} and ${sel("c1")}.</p>
+    <div id="notesMsg" role="status"></div>
+    <div class="row"><button class="btn primary" id="chkNotes">Check my notes</button>${N.done?`<button class="btn primary" id="getCode">Get my code word</button>`:""}</div></div>
+  <div class="card" style="margin-top:14px"><h2>Going Further (optional)</h2>
+    <label class="fld" for="gfPick">Pick one</label>
+    <select id="gfPick" style="font:inherit;padding:8px;border:2px solid var(--ink);border-radius:8px;max-width:100%;background:#fff;color:var(--ink)"><option value="">none</option>${["A","B","C"].map(k=>`<option value="${k}" ${N.pick===k?"selected":""}>${esc(GF[k])}</option>`).join("")}</select>
+    <label class="fld" for="gfText">Your answer</label><textarea id="gfText">${esc(N.extra)}</textarea></div>`;
+}
+function notesCheck(){
+  const s = S.notes.sel;
+  const a=[s.a0,s.a1,s.a2], b=[s.b0,s.b1], c=[s.c0,s.c1];
+  return [
+    a.every(Boolean) && new Set(a).size===3 && a.every(k=>RECALL.includes(k)),
+    b.every(Boolean) && new Set(b).size===2 && b.includes("wall") && b.includes("chloro"),
+    c.every(Boolean) && new Set(c).size===2 && c.includes("lyso") && c.includes("centri")];
+}
+function keyTable(order, cell){
+  return `<table class="keyt"><thead><tr><th>Color</th><th>#</th><th>Part</th><th>Job</th></tr></thead><tbody>${order.map(k=>{
+    const o=ORG[k], col=S.colors[cell][k];
+    return `<tr><td><span class="sw" style="background:${col||"#fff"}" role="img" aria-label="${col?"colored":"not colored"}"></span></td><td>${o.num}</td><td><strong>${esc(o.name)}</strong></td><td>${esc(o.job)}</td></tr>`; }).join("")}</tbody></table>`;
+}
+function vSummary(){
+  const p = points(); const w = S.who; const N = S.notes;
+  const nm = k => (k && ORG[k]) ? ORG[k].name : "____";
+  const who = (w.name||w.hour) ? `${esc(w.name||"Student")}${w.hour?`, hour ${esc(w.hour)}`:""}` : "Student";
+  const rows = LEVELS.map(L=>{ const st=levelStats(L.n); return `<tr><td>${L.n}. ${esc(L.title)}</td><td>${S.done[L.n]?`<span aria-label="${levelStars(L.n)} of 3 stars">${stars(levelStars(L.n))}</span>`:"Not played"}</td><td>${st.tot?`${st.first} of ${st.tot}`:"-"}</td></tr>`; }).join("");
+  const stamps = [...PLANT_ORDER.filter((k,i)=>S.stamped["1:"+i]), ...NEWBIES.filter((k,i)=>S.stamped["2:"+(RECALL.length+i)])];
+  const passport = stamps.length ? stamps.map(k=>`<span class="found" style="margin:3px 4px 3px 0">${esc(ORG[k].name)}</span>`).join("") : "No stamps yet";
+  const s = N.sel;
+  const gf = (N.pick || N.extra.trim()) ? `<h3>Going Further</h3><p><strong>${esc(GF[N.pick]||"My idea")}</strong></p><p>${esc(N.extra).replace(/\n/g,"<br>")}</p>` : "";
+  return `<h2 style="margin-top:22px">${TX.sumH2}</h2>
+  ${bubble(TX.sum)}
+  <div class="card codecard"><h2>Show your teacher</h2>
+    <p class="note" style="margin:0">Your code word:</p><p class="codeword" id="codeword">${esc(CODE)}</p>
+    <p>Show your teacher this screen, including your colored cells, your compare sentences, and your code word.</p>
+    <div class="row noprint"><button class="btn" id="printBtn">Print or save as PDF</button></div></div>
+  <div class="card report" id="report" style="margin-top:16px">
+    <h2>Field notes: ${who}</h2>
+    <h3>Leaf cell (plant cell)</h3>
+    <div class="diagram" data-colorcell="plant">${SVG.plant}</div>${keyTable(PLANT_ORDER,"plant")}
+    <h3>Dog paw cell (animal cell)</h3>
+    <div class="diagram" data-colorcell="animal">${SVG.animal}</div>${keyTable(ANIMAL_ORDER,"animal")}
+    <h3>Compare the two cells</h3>
+    <p>Both cells have <strong>${nm(s.a0)}</strong>, <strong>${nm(s.a1)}</strong>, and <strong>${nm(s.a2)}</strong>.</p>
+    <p>Only the plant cell shows <strong>${nm(s.b0)}</strong> and <strong>${nm(s.b1)}</strong>.</p>
+    <p>Only the animal cell shows <strong>${nm(s.c0)}</strong> and <strong>${nm(s.c1)}</strong>.</p>
+    ${gf}
+    <p><strong>Code word:</strong> ${esc(CODE)}</p>
+  </div>
+  <div class="sumgrid noprint">
+    <div class="card"><p>${TX.rank}</p><p class="rank">${esc(rankOf(p))}</p><p><strong>${p}</strong> points</p>
+      <p class="note">Ranks go up at 100, 250, 380, and 460 points.</p></div>
+    <div class="card"><h2>${TX.lootTitle}</h2><p class="note">${TX.lootNote}</p><div>${passport}</div></div>
+  </div>
+  <div class="card noprint" style="margin-top:14px"><h2>Your levels</h2>
+    <table class="stats"><thead><tr><th>Level</th><th>Stars</th><th>First try</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="row noprint"><button class="btn" id="toMap">Route map</button><button class="btn" id="again">Start over</button></div>`;
+}
+
+/* ---------- interaction wiring ---------- */
+function wire(){
+  // highlight diagrams
+  $$("[data-focus]").forEach(el=>{
+    focusDiagram(el, el.dataset.focus, el.dataset.hide==="1", el.dataset.color||"");
+  });
+  $$("[data-listen]").forEach(b=> b.onclick = ()=>speak(b.dataset.listen));
+  const st=$("#start"); if (st) st.onclick=()=>{
+    S.who.name=$("#nm").value.trim(); S.who.hour=$("#hr").value.trim();
+    const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || UNLOCK){ go("map"); return; }
+    st.disabled=true; const cd=$("#countdown"); const hb=$("#herobus");
+    if (S.theme==="quest"){
+      cd.textContent="Rolling..."; hb.classList.add("spin");
+      setTimeout(()=>{ cd.textContent="Natural 20!"; },1300);
+      setTimeout(()=>go("map"),2100);
+    } else {
+      let n=3; cd.textContent="3...";
+      const tick=setInterval(()=>{ n--; if(n>0){ cd.textContent=n+"..."; } else { clearInterval(tick); cd.textContent="ZAP!"; hb.classList.add("shrunk"); setTimeout(()=>go("map"),900); } },700);
+    }
+  };
+  $$("button[data-theme]").forEach(b=> b.onclick=()=>{ setTheme(b.dataset.theme); go("welcome"); });
+  $$("[data-lvl]").forEach(b=> b.onclick=()=>{ const n=+b.dataset.lvl; go("step", n, 0); });
+  const ts=$("#toSummary"); if (ts) ts.onclick=()=>go(S.notes.done?"summary":"notes");
+  const tm=$("#toMap"); if (tm) tm.onclick=()=>go("map");
+  const ag=$("#again"); if (ag) ag.onclick=()=>{ if (confirm("Start over? Your points and stars will reset.")) { stopSpeech(); S.res={};S.chk={};S.stamped={};S.ord={};S.done={};S.colors={plant:{},animal:{}};S.pen=null;S.hint={};S.notes={done:false,sel:{},pick:"",extra:""};S.stack=[];S.view="pick";S.level=0;S.idx=0;setTheme("bus");render(); } };
+  const ct=$("#cont"); if (ct) ct.onclick=()=>{ if (S.level===LEVELS.length) go("notes"); else go("step", S.level+1, 0); };
+
+  // apply saved colors to any diagram that shows the student's work
+  $$("[data-colorcell]").forEach(el=>{ const svg=$("svg",el); if (svg) applyColors(svg, el.dataset.colorcell); });
+  const stepId = `${S.level}:${S.idx}`;
+  const L0 = LEVELS[S.level-1] || {};
+  const isRecall = S.view==="step" && L0.type==="animal" && S.idx<RECALL.length;
+  const refresh = () => { const btn=$("#stamp")||$("#next"); if (btn && S.chk[stepId]) btn.disabled = !(S.chk[stepId].every(Boolean) || UNLOCK); };
+  $$(".pc").forEach(b=> b.onclick=()=>{
+    S.pen={name:b.dataset.pname, hex:b.dataset.pen};
+    $$(".pc").forEach(x=>x.setAttribute("aria-pressed", String(x===b)));
+    const pn=$("#penName"); if (pn) pn.textContent="Selected color: "+S.pen.name;
+  });
+  $$("[data-clickpaint]").forEach(box=> box.addEventListener("click", e=>{
+    const g = e.target.closest ? e.target.closest(".org") : null; if (!g) return;
+    const focus = box.dataset.clickpaint, cell = box.dataset.colorcell;
+    if (g.dataset.org !== focus){ toast("Color the striped part."); return; }
+    if (!S.pen){ toast("Pick a color first."); return; }
+    S.colors[cell][focus] = S.pen.hex; paintOrg($("svg",box), focus, S.pen.hex);
+    S.chk[stepId][isRecall?0:2] = true;
+    const cn=$("#colNote"); if (cn) cn.textContent="✓ Colored";
+    refresh();
+  }));
+  const nameIn=$("#nameIn");
+  if (nameIn && !nameIn.disabled){
+    const key = LEVELS[S.level-1].type==="tour" ? PLANT_ORDER[S.idx] : NEWBIES[S.idx-RECALL.length];
+    const okName = ()=>{ S.chk[stepId][0]=true; nameIn.value=ORG[key].name; nameIn.disabled=true; $("#nameOk").textContent="✓ Correct"; const h=$("#nameHelp"); if (h) h.remove(); refresh(); };
+    nameIn.addEventListener("input", ()=>{ if (nameMatches(key, nameIn.value)) okName(); });
+    const nh=$("#nameHelp"); if (nh) nh.onclick=()=>{
+      if (!S.hint[stepId]){
+        S.hint[stepId]=true; const L1=ORG[key].name[0];
+        if (!nameIn.value.trim() || nameIn.value.trim()[0].toLowerCase()!==L1.toLowerCase()) nameIn.value=L1;
+        $("#hintMsg").textContent="It starts with "+L1.toUpperCase()+".";
+        nh.textContent="Show me the answer"; nameIn.focus();
+      } else { okName(); $("#hintMsg").textContent=""; }
+    };
+  }
+  $$("[data-job]").forEach(b=> b.onclick=()=>{
+    const key = LEVELS[S.level-1].type==="tour" ? PLANT_ORDER[S.idx] : NEWBIES[S.idx-RECALL.length];
+    if (b.dataset.job===key){
+      S.chk[stepId][1]=true; b.classList.add("correct"); b.insertAdjacentHTML("beforeend",'<span class="tag">Correct</span>');
+      $$("[data-job]").forEach(x=>x.disabled=true); burst(b, 14); refresh();
+    } else { b.classList.add("wrong"); b.disabled=true; b.insertAdjacentHTML("beforeend",'<span class="tag">Not this one</span>'); }
+  });
+  // notes view
+  $$("select[data-sel]").forEach(sl=> sl.onchange=()=>{ S.notes.sel[sl.dataset.sel]=sl.value; });
+  const gp=$("#gfPick"); if (gp) gp.onchange=()=>{ S.notes.pick=gp.value; };
+  const gt=$("#gfText"); if (gt) gt.oninput=()=>{ S.notes.extra=gt.value; };
+  const cn2=$("#chkNotes"); if (cn2) cn2.onclick=()=>{
+    const r = notesCheck(); const msg=$("#notesMsg");
+    const lines = r.map((ok,i)=> ok ? `<div class="fb good">Sentence ${i+1}: ✓ Right</div>` : `<div class="fb bad">Sentence ${i+1}: look again. ${["Pick three different parts that both cells have.","Think about what only the plant cell has.","Think about what only the animal cell has on our diagrams."][i]}</div>`);
+    msg.innerHTML = lines.join("");
+    if (r.every(Boolean)){ S.notes.done=true; burst(cn2, 18); if (!$("#getCode")) cn2.parentElement.insertAdjacentHTML("beforeend",'<button class="btn primary" id="getCode">Get my code word</button>'); }
+    const gc=$("#getCode"); if (gc) gc.onclick=()=>go("summary");
+  };
+  const gc0=$("#getCode"); if (gc0) gc0.onclick=()=>go("summary");
+  const pb=$("#printBtn"); if (pb) pb.onclick=()=>window.print();
+  const up=$("#usePrev"); if (up) up.onclick=()=>{ const b=$(`.pc[data-pen="${up.dataset.hex}"]`); if (b) b.click(); };
+  const stamp=$("#stamp"); if (stamp) stamp.onclick=()=>{ S.stamped[`${S.level}:${S.idx}`]=true; nextStep(); };
+  const nx=$("#next"); if (nx) nx.onclick=()=>nextStep();
+
+  // quiz picks
+  $$("[data-pick]").forEach(b=> b.onclick=()=>answer(b.dataset.pick));
+  $$("[data-sort]").forEach(b=> b.onclick=()=>answer(b.dataset.sort));
+}
+
+function correctKey(){
+  const L=LEVELS[S.level-1];
+  if (L.type==="animal") return RECALL[S.idx];
+  if (L.type==="quiz") return JOBS[S.idx].a;
+  if (L.type==="sort") return SORTS[S.idx].a;
+  if (L.type==="case") return CASES[S.idx].a;
+  if (L.type==="boss") return BOSS[S.idx].a;
+}
+function answer(pick){
+  const id=`${S.level}:${S.idx}`;
+  const r = S.res[id] || (S.res[id]={tries:0, ok:false, wrong:[]});
+  if (r.ok) return;
+  r.tries++;
+  if (pick===correctKey()) r.ok=true; else r.wrong.push(pick);
+  const keep = window.scrollY;
+  render(); window.scrollTo(0,keep);
+  if (r.ok){ const el=$(".choice.correct"); if (el) burst(el, r.tries===1?18:9); }
+}
+
+
+/* ---------- My notes: look back at colors and which parts each cell has ---------- */
+let NOTES_ALL = false;
+function seenPart(cell, key){
+  if (NOTES_ALL) return true;
+  if (cell==="plant"){ const i=PLANT_ORDER.indexOf(key); return !!(S.stamped["1:"+i] || S.colors.plant[key]); }
+  const ri = RECALL.indexOf(key);
+  if (ri>=0) return !!(S.res["2:"+ri] && S.res["2:"+ri].ok) || !!S.colors.animal[key];
+  const ni = NEWBIES.indexOf(key); return !!(S.stamped["2:"+(RECALL.length+ni)] || S.colors.animal[key]);
+}
+function openNotes(startTab){
+  stopSpeech();
+  const L = LEVELS[S.level-1];
+  let tab = (typeof startTab==="string") ? startTab : ((S.view==="step" && L && L.type==="animal") ? "animal" : "plant");
+  const scrim = document.createElement("div"); scrim.className="scrim";
+  const sw = (hex, label) => `<span class="sw" style="background:${hex||"#fff"}" role="img" aria-label="${label}"></span>`;
+  function body(){
+    if (tab==="plant" || tab==="animal"){
+      const order = tab==="plant" ? PLANT_ORDER : ANIMAL_ORDER;
+      const rows = order.map(k=>{
+        const o = ORG[k];
+        if (!seenPart(tab,k)) return `<tr class="unseen"><td>${sw("","not visited")}</td><td>${o.num}</td><td colspan="2">Not visited yet</td></tr>`;
+        const col = S.colors[tab][k];
+        return `<tr><td>${sw(col, col?"your color":"not colored yet")}</td><td>${o.num}</td><td><strong>${esc(o.name)}</strong></td><td>${esc(o.job)}</td></tr>`;
+      }).join("");
+      return `<div class="diagram" data-nc="${tab}">${SVG[tab]}</div>
+        <table class="keyt"><thead><tr><th>Your color</th><th>#</th><th>Part</th><th>Job</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+    const all = [...new Set([...PLANT_ORDER, ...ANIMAL_ORDER])];
+    const known = all.filter(k => seenPart("plant",k) || seenPart("animal",k));
+    const col = k => S.colors.plant[k] || S.colors.animal[k];
+    const group = (f, title) => {
+      const total = all.filter(k=>ORG[k].found===f).length; const have = known.filter(k=>ORG[k].found===f);
+      const more = total - have.length;
+      return `<div class="card" style="padding:12px 16px"><h3>${title}</h3><ul>${have.map(k=>`<li>${sw(col(k),"your color")} <strong>${esc(ORG[k].name)}</strong><br><span class="note">${esc(ORG[k].job)}</span></li>`).join("") || "<li class='note'>None yet</li>"}</ul>${more>0?`<p class="note">${more} more to discover</p>`:""}</div>`;
+    };
+    return `<p class="note">These are the parts you have visited so far.</p>
+      <div class="cmp">${group("both","Both cells")}${group("plant","Only the plant cell")}${group("animal","Only the animal cell (on our diagrams)")}</div>`;
+  }
+  function paint(){
+    scrim.innerHTML = `<div class="panel wide" role="dialog" aria-modal="true" aria-labelledby="nt"><h2 id="nt">My notes</h2>
+      <div class="seg ntabs" role="group" aria-label="Notes pages">
+        <button data-nt="plant" aria-pressed="${tab==="plant"}">Leaf cell</button>
+        <button data-nt="animal" aria-pressed="${tab==="animal"}">Dog paw cell</button>
+        <button data-nt="compare" aria-pressed="${tab==="compare"}">Plant vs. animal</button></div>
+      <div style="margin-top:12px">${body()}</div>
+      <div class="row"><button class="btn primary" id="ncl">Close</button></div></div>`;
+    const dg = $(".diagram[data-nc]", scrim); if (dg) applyColors($("svg",dg), dg.dataset.nc);
+    $$("[data-nt]", scrim).forEach(b=> b.onclick=()=>{ tab=b.dataset.nt; paint(); const f=$(`[data-nt="${tab}"]`,scrim); if (f) f.focus({preventScroll:true}); });
+    $("#ncl",scrim).onclick = close;
+  }
+  const close = () => { scrim.remove(); const nb=$("#notesBtn"); if (nb) nb.focus(); };
+  scrim.onclick = e => { if (e.target===scrim) close(); };
+  scrim.onkeydown = e => { if (e.key==="Escape") close(); };
+  document.body.appendChild(scrim); paint(); $("[data-nt]",scrim).focus({preventScroll:true});
+}
+
+/* ---------- reading options ---------- */
+function openOptions(){
+  const scrim=document.createElement("div"); scrim.className="scrim";
+  const seg=(name,items)=>`<div class="seg" role="group" aria-label="${name}">${items.map(([v,t])=>`<button data-o="${name}" data-v="${v}" aria-pressed="${String(OPT[name]==v)}">${t}</button>`).join("")}</div>`;
+  scrim.innerHTML=`<div class="panel" role="dialog" aria-modal="true" aria-labelledby="ot"><h2 id="ot">Reading options</h2>
+    <p class="note">Pick what is easiest for your eyes. These stay on this device.</p>
+    <div class="opt"><b>Text size</b>${seg("size",[[90,"Smaller"],[100,"Normal"],[120,"Larger"],[140,"Largest"]])}</div>
+    <div class="opt"><b>Letters</b>${seg("font",[["standard","Standard"],["easy","Easy read"]])}</div>
+    <div class="opt"><b>Line spacing</b>${seg("line",[[1.6,"Normal"],[1.85,"Roomy"],[2.1,"Extra roomy"]])}</div>
+    <div class="opt"><b>Background</b>${seg("bg",[["white","White"],["cream","Cream"],["blue","Light blue"],["gray","Light gray"]])}</div>
+    <div class="opt"><b>Listen speed</b>${seg("rate",[[0.8,"Slow"],[1,"Normal"],[1.2,"Fast"]])}</div>
+    <div class="row"><button class="btn primary" id="oc">Done</button><button class="btn" id="or">Reset</button></div></div>`;
+  document.body.appendChild(scrim);
+  const close=()=>{ scrim.remove(); $("#opts").focus(); };
+  scrim.onclick=e=>{ if (e.target===scrim) close(); };
+  scrim.onkeydown=e=>{ if (e.key==="Escape") close(); };
+  $("#oc",scrim).onclick=close;
+  $("#or",scrim).onclick=()=>{ Object.assign(OPT,{size:100,font:"standard",line:1.6,bg:"white",rate:1}); applyOptions(); $$("[data-o]",scrim).forEach(b=>b.setAttribute("aria-pressed",String(OPT[b.dataset.o]==b.dataset.v))); };
+  $$("[data-o]",scrim).forEach(b=> b.onclick=()=>{
+    const k=b.dataset.o; const v=(k==="size"||k==="line"||k==="rate")?parseFloat(b.dataset.v):b.dataset.v;
+    OPT[k]=v; applyOptions();
+    $$(`[data-o="${k}"]`,scrim).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+  });
+  $("#oc",scrim).focus();
+}
+
+render();
+</script>
+</body>
+</html>
